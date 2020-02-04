@@ -21,7 +21,7 @@ struct SI_JUSTSURVIVE_API FShopData
 		class UStaticMesh* m_StaticMesh;
 
 	UPROPERTY(EditAnywhere, Category = "ShopData")
-		class UTexture2D* m_Texture; 
+		class UTexture* m_Texture; 
 
 	bool bIsInShop; 
 };
@@ -45,10 +45,15 @@ public:
 
 	virtual bool Purchase(class ASI_JustSurviveCharacter* character);
 
+	FShopData GetShopData();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		class UStaticMeshComponent* m_StaticMesh; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		class UBoxComponent* m_BoxComponent; 
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+		FShopData ItemShopData;
 };
