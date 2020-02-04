@@ -11,7 +11,8 @@
 
 /**
  * Change log:
-
+ *			TODO: Check about using a CameraActor instead of making your own.  Might not work since it is an actor not a pawn
+ *			TODO:  Check over TODOs that can be fixed after a merge
  *			2/3/2020: Initial creation of this file
  */
 UCLASS()
@@ -28,7 +29,7 @@ public:
 	void SetDisplayText(FShopData& data);
 
 protected:
-	class APlayerController* m_OwningPC;
+	class APlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
 
 	//The purchaseable towers
 	UPROPERTY(EditAnywhere, Category = "Config")
