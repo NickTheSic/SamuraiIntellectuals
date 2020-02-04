@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "Components/PawnNoiseEmitterComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -82,6 +83,10 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+	//Noise Emitter for Tower's PawnSensingComponent
+	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
+
 }
 
 void ASI_JustSurviveCharacter::BeginPlay()
@@ -140,6 +145,8 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ASI_JustSurviveCharacter::OnFire()
 {
+	MakeNoise(1.0f, this, GetActorLocation());
+
 	// try and fire a projectile
 	if (ProjectileClass != NULL)
 	{
@@ -256,6 +263,8 @@ void ASI_JustSurviveCharacter::EndTouch(const ETouchIndex::Type FingerIndex, con
 
 void ASI_JustSurviveCharacter::MoveForward(float Value)
 {
+	MakeNoise(1.0f, this, GetActorLocation());
+
 	if (Value != 0.0f)
 	{
 		// add movement in that direction
@@ -265,6 +274,8 @@ void ASI_JustSurviveCharacter::MoveForward(float Value)
 
 void ASI_JustSurviveCharacter::MoveRight(float Value)
 {
+	MakeNoise(1.0f, this, GetActorLocation());
+
 	if (Value != 0.0f)
 	{
 		// add movement in that direction

@@ -51,9 +51,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		class UPawnSensingComponent* m_PawnSensingComp;
 
+
 	ATowerBase();
 
 protected:
-
+	UFUNCTION()
+		void OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume);
 	
+public:
+	void ShootProjectile();
+
+	virtual bool Purchase(ASI_JustSurviveCharacter* player);
 };
