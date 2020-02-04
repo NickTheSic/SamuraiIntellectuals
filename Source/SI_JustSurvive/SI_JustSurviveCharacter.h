@@ -6,7 +6,54 @@
 #include "GameFramework/Character.h"
 #include "SI_JustSurviveCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class ETestTraceType : uint8
+{
+	TTT_CollisionChannel	UMETA(DisplayName = "Collision Channel"),
+	TTT_ObjectType			UMETA(DisplayName = "Object Type"),
+	TTT_TraceType			UMETA(DisplayName = "Trace Type"),
+	TTT_ProfileName			UMETA(DisplayName = "Profile Name")
+};
+
+USTRUCT(BlueprintType)
+struct FCollisionParams
+{
+	GENERATED_USTRUCT_BODY();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		TEnumAsByte<ECollisionEnabled::Type> CollisionEnabled;
+
+	UPROPERTY(EditAnywhere, BlueprintREadWrite, Category = "Collision")
+		TEnumAsByte <ECollisionResponse> CollisionResponseNew;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		TEnumAsByte <ECollisionChannel> CollisionChannel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		FName ProfileName;
+};
+
+USTRUCT(BlueprintType)
+struct FTraceParams
+{
+	GENERATED_USTRUCT_BODY();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		TEnumAsByte<ECollisionChannel> CollisionChannel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		TEnumAsByte<EObjectTypeQuery> ObjectType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		TEnumAsByte<ETraceTypeQuery> TraceType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		FName ProfileName;
+
+};
+
 class UInputComponent;
+class AWeaponBase; 
 
 UCLASS(config=Game)
 class ASI_JustSurviveCharacter : public ACharacter
@@ -47,6 +94,8 @@ class ASI_JustSurviveCharacter : public ACharacter
 
 public:
 	ASI_JustSurviveCharacter();
+
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay();
@@ -100,8 +149,7 @@ protected:
 	 */
 	void TurnAtRate(float Rate);
 
-	/**
-	 * Called via input to turn look up/down at a given rate.
+	/*** Called via input to turn look up/down at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
@@ -116,7 +164,7 @@ protected:
 	};
 	void BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
 	void EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
+	//void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
 	TouchData	TouchItem;
 	
 protected:
@@ -137,6 +185,33 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunStuff")
+		AWeaponBase* m_CurrentWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunStuff")
+		class UInventoryComponent* m_InventoryComponent;
+
+protected:
+
+	void ChangeWeapon(float val);
+
+	AActor* GetPickableActor_LineTraceSingleByChannel(ECollisionChannel CollisionChannel);
+
+	void SetupRay(FVector& StartTrace, FVector& Direction, FVector& EndTrace);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionTests")
+		ETestTraceType ETraceType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionTests")
+		FTraceParams TraceCollisionParams;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionTests")
+		FCollisionParams SphereCollisionParams;
+
+	bool bHasGun = false; 
 
 };
 

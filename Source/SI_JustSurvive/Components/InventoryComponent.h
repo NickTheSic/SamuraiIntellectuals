@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+class AWeaponBase; 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SI_JUSTSURVIVE_API UInventoryComponent : public UActorComponent
@@ -23,6 +24,25 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+protected:
+	AWeaponBase* m_CurrentWeapon; 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory")
+		TArray<AWeaponBase*> m_WeaponArray;
+
+public:
+	void NextWeapon(); 
+
+	void PreviousWeapon(); 
+
+	void SetCurrentWeapon(AWeaponBase* weapon); 
+
+	AWeaponBase* GetCurrentWeapon(); 
+
+	int GetWeaponCount(); 
+
+	void AddWeaponToInventory(AWeaponBase* weapon); 
 
 		
 };

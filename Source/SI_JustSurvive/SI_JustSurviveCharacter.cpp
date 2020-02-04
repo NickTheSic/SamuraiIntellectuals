@@ -11,6 +11,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "Components/InventoryComponent.h"
+#include "Items/WeaponBase.h"
+#include "DrawDebugHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -42,12 +45,13 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 
 	// Create a gun mesh component
-	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
-	FP_Gun->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
-	FP_Gun->bCastDynamicShadow = false;
-	FP_Gun->CastShadow = false;
-	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
-	FP_Gun->SetupAttachment(RootComponent);
+	//FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
+	//FP_Gun->SetOnlyOwnerSee(true);			// only the owning player will see this mesh
+	//FP_Gun->bCastDynamicShadow = false;
+	//FP_Gun->CastShadow = false;
+	//// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
+	//FP_Gun->SetupAttachment(RootComponent);
+	//FP_Gun->SetHiddenInGame(true);
 
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	FP_MuzzleLocation->SetupAttachment(FP_Gun);
@@ -82,6 +86,48 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+	m_InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory"); 
+}
+
+void ASI_JustSurviveCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	AActor* HitActor = nullptr;
+
+	HitActor = GetPickableActor_LineTraceSingleByChannel(TraceCollisionParams.CollisionChannel);
+
+	if (HitActor)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Hit - " + HitActor->GetActorLabel());
+
+		if (Cast<AWeaponBase>(HitActor))
+		{
+			/*if (bIsPickingUp)
+			{*/
+			AWeaponBase* tempWeapon = Cast<AWeaponBase>(HitActor);
+			//m_BombActor = Cast<ABombActor>(HitActor);
+
+			if (m_InventoryComponent->GetWeaponCount() > 0)
+				m_InventoryComponent->GetCurrentWeapon()->Unequip();
+
+			m_InventoryComponent->AddWeaponToInventory(tempWeapon); 
+
+			/*m_InventoryComponent->m_WeaponArray.AddUnique(tempWeapon);
+			m_InventoryComponent->SetCurrentWeapon(tempWeapon);*/
+			m_InventoryComponent->GetCurrentWeapon()->PickUp(this);
+			bHasGun = true;
+
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Weapon"));
+			/*}*/
+		}
+	}
+
+	if (!bHasGun)
+		Mesh1P->SetHiddenInGame(true);
+	else if (bHasGun)
+		Mesh1P->SetHiddenInGame(false);
 }
 
 void ASI_JustSurviveCharacter::BeginPlay()
@@ -90,7 +136,7 @@ void ASI_JustSurviveCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	//FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 
 	// Show or hide the two versions of the gun based on whether or not we're using motion controllers.
 	if (bUsingMotionControllers)
@@ -120,6 +166,9 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASI_JustSurviveCharacter::OnFire);
 
+	//Bind weapon event
+	PlayerInputComponent->BindAxis("ChangeWeapon", this, &ASI_JustSurviveCharacter::ChangeWeapon); 
+
 	// Enable touchscreen input
 	EnableTouchscreenMovement(PlayerInputComponent);
 
@@ -141,47 +190,53 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 void ASI_JustSurviveCharacter::OnFire()
 {
 	// try and fire a projectile
-	if (ProjectileClass != NULL)
+	//if (ProjectileClass != NULL)
+	//{
+	//	UWorld* const World = GetWorld();
+	//	if (World != NULL)
+	//	{
+	//		if (bUsingMotionControllers)
+	//		{
+	//			const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+	//			const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+	//			World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+	//		}
+	//		else
+	//		{
+	//			const FRotator SpawnRotation = GetControlRotation();
+	//			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+	//			const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+
+	//			//Set Spawn Collision Handling Override
+	//			FActorSpawnParameters ActorSpawnParams;
+	//			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+	//			// spawn the projectile at the muzzle
+	//			World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	//		}
+	//	}
+	//}
+
+	if (bHasGun)
 	{
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+		m_InventoryComponent->GetCurrentWeapon()->Shoot();
+
+		// try and play the sound if specified
+		if (FireSound != NULL)
 		{
-			if (bUsingMotionControllers)
-			{
-				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-			else
-			{
-				const FRotator SpawnRotation = GetControlRotation();
-				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-				// spawn the projectile at the muzzle
-				World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			}
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 		}
-	}
 
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
+		// try and play a firing animation if specified
 
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
+		if (FireAnimation != NULL)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
 }
@@ -297,4 +352,50 @@ bool ASI_JustSurviveCharacter::EnableTouchscreenMovement(class UInputComponent* 
 	}
 	
 	return false;
+}
+
+void ASI_JustSurviveCharacter::ChangeWeapon(float val)
+{
+	if (val > 0)
+		m_InventoryComponent->NextWeapon();
+
+	else if (val < 0)
+		m_InventoryComponent->PreviousWeapon();
+}
+
+AActor* ASI_JustSurviveCharacter::GetPickableActor_LineTraceSingleByChannel(ECollisionChannel CollisionChannel)
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		FVector StartTrace;
+		FVector Direction;
+		FVector EndTrace;
+
+		SetupRay(StartTrace, Direction, EndTrace);
+
+		FCollisionQueryParams TraceParams;
+		TraceParams.AddIgnoredActor(this);
+		TraceParams.bTraceComplex = true;
+		TraceParams.bReturnPhysicalMaterial = true;
+
+		FHitResult Hit(ForceInit);
+		UWorld* World = GetWorld();
+		World->LineTraceSingleByChannel(Hit, StartTrace, EndTrace, CollisionChannel, TraceParams); // simple trace function  ECC_PhysicsBody
+		DrawDebugLine(GetWorld(), StartTrace, EndTrace, FColor::Green, false, 1, 0, 1.f);
+		return Hit.GetActor();
+	}
+	return nullptr;
+}
+
+void ASI_JustSurviveCharacter::SetupRay(FVector& StartTrace, FVector& Direction, FVector& EndTrace)
+{
+	FVector CamLoc;
+	FRotator CamRot;
+
+	Controller->GetPlayerViewPoint(CamLoc, CamRot); // Get the camera position and rotation
+	CamLoc = GetActorLocation();
+
+	StartTrace = CamLoc; // trace start is the camera location
+	Direction = CamRot.Vector();
+	EndTrace = StartTrace + Direction * 300;
 }
