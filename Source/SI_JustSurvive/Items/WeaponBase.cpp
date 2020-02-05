@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "SI_JustSurvive/SI_JustSurviveCharacter.h"
 #include "SI_JustSurvive/SI_JustSurviveProjectile.h"
+#include <TimerManager.h>
 
 AWeaponBase::AWeaponBase()
 {
@@ -25,6 +26,8 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay(); 
+
+	m_TotalAmmo = m_ClipSize * 2; 
 }
 
 void AWeaponBase::Tick(float DeltaTime)
@@ -76,4 +79,21 @@ void AWeaponBase::Shoot()
 			}
 		}
 	}
+}
+
+void AWeaponBase::PullTrigger()
+{
+	FTimerManager& Timer = GetWorldTimerManager();
+	Timer.SetTimer(m_FireRateTimer, this, &AWeaponBase::Shoot, m_FireRate, true);
+}
+
+void AWeaponBase::ReleaseTrigger()
+{
+	GetWorld()->GetTimerManager().ClearTimer(m_FireRateTimer);
+}
+
+void AWeaponBase::Reload()
+{
+	m_TotalAmmo -= m_ClipSize - m_AmmoInClip; 
+	m_AmmoInClip = m_ClipSize; 
 }

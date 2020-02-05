@@ -31,6 +31,20 @@ protected:
 
 	class ASI_JustSurviveCharacter* m_Character; 
 
+	UPROPERTY(EditAnywhere, Category = "Gun")
+		int m_AmmoInClip; 
+
+	UPROPERTY(EditAnywhere, Category = "Gun")
+		int m_ClipSize;
+
+	UPROPERTY(EditAnywhere, Category = "Gun")
+		int m_TotalAmmo;
+
+	UPROPERTY(EditAnywhere, Category = "Gun")
+		float m_FireRate; 
+
+	FTimerHandle m_FireRateTimer; 
+
 public:
 	virtual void Tick(float DeltaTime) override;
 
@@ -39,5 +53,8 @@ public:
 	void Unequip();
 
 	void Shoot();
+	void PullTrigger(); 
+	void ReleaseTrigger(); 
+	void Reload(); 
 
 };
