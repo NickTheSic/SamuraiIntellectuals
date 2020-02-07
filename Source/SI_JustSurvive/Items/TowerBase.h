@@ -51,10 +51,22 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		class UPawnSensingComponent* m_PawnSensingComp;
 
+	//Spawning projectile from top of tower
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		class USceneComponent* FP_MuzzleLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectiles")
+		TSubclassOf<class ASI_JustSurviveProjectile> ProjectileTemplate;
+
+	FTimerHandle SpawnProjectileTimer;
+
+	bool bCanShoot;
 
 	ATowerBase();
 
 protected:
+	virtual void BeginPlay() override;
+
 	UFUNCTION()
 		void OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume);
 	
