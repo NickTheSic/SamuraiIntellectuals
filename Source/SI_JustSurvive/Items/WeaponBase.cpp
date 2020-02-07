@@ -63,19 +63,24 @@ void AWeaponBase::Shoot()
 		UWorld* const World = GetWorld(); 
 		if (World != NULL)
 		{
-			const FRotator SpawnRotation = m_Character->GetControlRotation();
-
-			if (m_Character != nullptr)
+			if (m_AmmoInClip > 0)
 			{
-				const FVector SpawnLocation = m_StaticMesh->GetSocketLocation("Muzzle");
+				const FRotator SpawnRotation = m_Character->GetControlRotation();
 
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+				if (m_Character != nullptr)
+				{
+					const FVector SpawnLocation = m_StaticMesh->GetSocketLocation("Muzzle");
 
-				//TODO: Change the projectile subclass of template to the actual projectile we plan to use.
-				// spawn the projectile at the muzzle
-				World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+					//Set Spawn Collision Handling Override
+					FActorSpawnParameters ActorSpawnParams;
+					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+					//TODO: Change the projectile subclass of template to the actual projectile we plan to use.
+					// spawn the projectile at the muzzle
+					World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+					m_AmmoInClip--; 
+				}
 			}
 		}
 	}
@@ -94,6 +99,24 @@ void AWeaponBase::ReleaseTrigger()
 
 void AWeaponBase::Reload()
 {
-	m_TotalAmmo -= m_ClipSize - m_AmmoInClip; 
-	m_AmmoInClip = m_ClipSize; 
+	int ammocheck = m_TotalAmmo - (m_ClipSize - m_AmmoInClip);
+
+	if (ammocheck > 0)
+	{
+		m_TotalAmmo -= m_ClipSize - m_AmmoInClip;
+		m_AmmoInClip = m_ClipSize;
+	}
+	else if (ammocheck < 0 )
+	{
+		if ((m_AmmoInClip + m_TotalAmmo) <= m_ClipSize)
+		{
+			m_AmmoInClip += m_TotalAmmo;
+			m_TotalAmmo = 0;
+		}
+	}
+	else
+	{
+		m_AmmoInClip = m_TotalAmmo; 
+		m_TotalAmmo = 0; 
+	}
 }

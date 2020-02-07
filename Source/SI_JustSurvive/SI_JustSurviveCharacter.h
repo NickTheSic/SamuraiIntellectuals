@@ -187,20 +187,34 @@ public:
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 public:
+	UFUNCTION()
+		void PullTrigger();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunStuff")
-		AWeaponBase* m_CurrentWeapon;
+	UFUNCTION()
+		void ReleaseTrigger();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunStuff")
-		class UInventoryComponent* m_InventoryComponent;
+	UFUNCTION()
+		void Reload(); 
 
-protected:
+	UFUNCTION()
+		void StartInteraction();
+
+	UFUNCTION()
+		void StopInteraction();
 
 	void ChangeWeapon(float val);
 
 	AActor* GetPickableActor_LineTraceSingleByChannel(ECollisionChannel CollisionChannel);
 
 	void SetupRay(FVector& StartTrace, FVector& Direction, FVector& EndTrace);
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunStuff")
+		AWeaponBase* m_CurrentWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunStuff")
+		class UInventoryComponent* m_InventoryComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionTests")
 		ETestTraceType ETraceType;
@@ -212,6 +226,8 @@ protected:
 		FCollisionParams SphereCollisionParams;
 
 	bool bHasGun = false; 
+
+	bool bIsInteracting = false; 
 
 };
 

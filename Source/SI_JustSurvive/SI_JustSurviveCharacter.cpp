@@ -104,23 +104,23 @@ void ASI_JustSurviveCharacter::Tick(float DeltaTime)
 
 		if (Cast<AWeaponBase>(HitActor))
 		{
-			/*if (bIsPickingUp)
-			{*/
-			AWeaponBase* tempWeapon = Cast<AWeaponBase>(HitActor);
-			//m_BombActor = Cast<ABombActor>(HitActor);
+			if (bIsInteracting)
+			{
+				AWeaponBase* tempWeapon = Cast<AWeaponBase>(HitActor);
+				//m_BombActor = Cast<ABombActor>(HitActor);
 
-			if (m_InventoryComponent->GetWeaponCount() > 0)
-				m_InventoryComponent->GetCurrentWeapon()->Unequip();
+				if (m_InventoryComponent->GetWeaponCount() > 0)
+					m_InventoryComponent->GetCurrentWeapon()->Unequip();
 
-			m_InventoryComponent->AddWeaponToInventory(tempWeapon); 
+				m_InventoryComponent->AddWeaponToInventory(tempWeapon);
 
-			/*m_InventoryComponent->m_WeaponArray.AddUnique(tempWeapon);
-			m_InventoryComponent->SetCurrentWeapon(tempWeapon);*/
-			m_InventoryComponent->GetCurrentWeapon()->PickUp(this);
-			bHasGun = true;
+				/*m_InventoryComponent->m_WeaponArray.AddUnique(tempWeapon);
+				m_InventoryComponent->SetCurrentWeapon(tempWeapon);*/
+				m_InventoryComponent->GetCurrentWeapon()->PickUp(this);
+				bHasGun = true;
 
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Weapon"));
-			/*}*/
+				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Weapon"));
+			}
 		}
 	}
 
@@ -168,6 +168,13 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 	//Bind weapon event
 	PlayerInputComponent->BindAxis("ChangeWeapon", this, &ASI_JustSurviveCharacter::ChangeWeapon); 
+	PlayerInputComponent->BindAction("PullTrigger", IE_Pressed, this, &ASI_JustSurviveCharacter::PullTrigger); 
+	PlayerInputComponent->BindAction("ReleaseTrigger", IE_Released, this, &ASI_JustSurviveCharacter::ReleaseTrigger); 
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASI_JustSurviveCharacter::Reload); 
+
+	//Bind PlayerInteraction
+	PlayerInputComponent->BindAction("StartInteraction", IE_Pressed, this, &ASI_JustSurviveCharacter::StartInteraction);
+	PlayerInputComponent->BindAction("StopInteraction", IE_Released, this, &ASI_JustSurviveCharacter::StopInteraction);
 
 	// Enable touchscreen input
 	EnableTouchscreenMovement(PlayerInputComponent);
@@ -189,33 +196,6 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ASI_JustSurviveCharacter::OnFire()
 {
-	// try and fire a projectile
-	//if (ProjectileClass != NULL)
-	//{
-	//	UWorld* const World = GetWorld();
-	//	if (World != NULL)
-	//	{
-	//		if (bUsingMotionControllers)
-	//		{
-	//			const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-	//			const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-	//			World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-	//		}
-	//		else
-	//		{
-	//			const FRotator SpawnRotation = GetControlRotation();
-	//			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-	//			const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
-
-	//			//Set Spawn Collision Handling Override
-	//			FActorSpawnParameters ActorSpawnParams;
-	//			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-	//			// spawn the projectile at the muzzle
-	//			World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-	//		}
-	//	}
-	//}
 
 	if (bHasGun)
 	{
@@ -271,44 +251,6 @@ void ASI_JustSurviveCharacter::EndTouch(const ETouchIndex::Type FingerIndex, con
 	TouchItem.bIsPressed = false;
 }
 
-//Commenting this section out to be consistent with FPS BP template.
-//This allows the user to turn without using the right virtual joystick
-
-//void ASI_JustSurviveCharacter::TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	if ((TouchItem.bIsPressed == true) && (TouchItem.FingerIndex == FingerIndex))
-//	{
-//		if (TouchItem.bIsPressed)
-//		{
-//			if (GetWorld() != nullptr)
-//			{
-//				UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
-//				if (ViewportClient != nullptr)
-//				{
-//					FVector MoveDelta = Location - TouchItem.Location;
-//					FVector2D ScreenSize;
-//					ViewportClient->GetViewportSize(ScreenSize);
-//					FVector2D ScaledDelta = FVector2D(MoveDelta.X, MoveDelta.Y) / ScreenSize;
-//					if (FMath::Abs(ScaledDelta.X) >= 4.0 / ScreenSize.X)
-//					{
-//						TouchItem.bMoved = true;
-//						float Value = ScaledDelta.X * BaseTurnRate;
-//						AddControllerYawInput(Value);
-//					}
-//					if (FMath::Abs(ScaledDelta.Y) >= 4.0 / ScreenSize.Y)
-//					{
-//						TouchItem.bMoved = true;
-//						float Value = ScaledDelta.Y * BaseTurnRate;
-//						AddControllerPitchInput(Value);
-//					}
-//					TouchItem.Location = Location;
-//				}
-//				TouchItem.Location = Location;
-//			}
-//		}
-//	}
-//}
-
 void ASI_JustSurviveCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -352,6 +294,16 @@ bool ASI_JustSurviveCharacter::EnableTouchscreenMovement(class UInputComponent* 
 	}
 	
 	return false;
+}
+
+void ASI_JustSurviveCharacter::StartInteraction()
+{
+	bIsInteracting = true; 
+}
+
+void ASI_JustSurviveCharacter::StopInteraction()
+{
+	bIsInteracting = false; 
 }
 
 void ASI_JustSurviveCharacter::ChangeWeapon(float val)
@@ -398,4 +350,28 @@ void ASI_JustSurviveCharacter::SetupRay(FVector& StartTrace, FVector& Direction,
 	StartTrace = CamLoc; // trace start is the camera location
 	Direction = CamRot.Vector();
 	EndTrace = StartTrace + Direction * 300;
+}
+
+void ASI_JustSurviveCharacter::PullTrigger()
+{
+	if (bHasGun)
+	{
+		m_InventoryComponent->GetCurrentWeapon()->PullTrigger();
+	}
+}
+
+void ASI_JustSurviveCharacter::ReleaseTrigger()
+{
+	if (bHasGun)
+	{
+		m_InventoryComponent->GetCurrentWeapon()->ReleaseTrigger();
+	}
+}
+
+void ASI_JustSurviveCharacter::Reload()
+{
+	if (bHasGun && m_InventoryComponent->GetCurrentWeapon() != nullptr)
+	{
+		m_InventoryComponent->GetCurrentWeapon()->Reload(); 
+	}
 }
