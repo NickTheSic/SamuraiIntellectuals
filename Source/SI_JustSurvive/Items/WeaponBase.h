@@ -45,6 +45,8 @@ protected:
 
 	FTimerHandle m_FireRateTimer; 
 
+	//TODO: Add A Gun Data struct to represent: cost, image for ui, ammo in clip, clip size, fire rate, total ammo
+
 public:
 	virtual void Tick(float DeltaTime) override;
 
