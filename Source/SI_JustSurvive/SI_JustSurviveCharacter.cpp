@@ -14,6 +14,7 @@
 #include "Components/InventoryComponent.h"
 #include "Items/WeaponBase.h"
 #include "DrawDebugHelpers.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -87,6 +88,8 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
 
+	//Noise Emitter for Tower's PawnSensingComponent
+	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
 	m_InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory"); 
 }
 
@@ -196,6 +199,25 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ASI_JustSurviveCharacter::OnFire()
 {
+	MakeNoise(1.0f, this, GetActorLocation());
+
+	// try and fire a projectile
+	if (ProjectileClass != NULL)
+	{
+		UWorld* const World = GetWorld();
+		if (World != NULL)
+		{
+			if (bUsingMotionControllers)
+			{
+				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+				World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			}
+			else
+			{
+				const FRotator SpawnRotation = GetControlRotation();
+				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
 
 	if (bHasGun)
 	{
@@ -253,6 +275,8 @@ void ASI_JustSurviveCharacter::EndTouch(const ETouchIndex::Type FingerIndex, con
 
 void ASI_JustSurviveCharacter::MoveForward(float Value)
 {
+	MakeNoise(1.0f, this, GetActorLocation());
+
 	if (Value != 0.0f)
 	{
 		// add movement in that direction
@@ -262,6 +286,8 @@ void ASI_JustSurviveCharacter::MoveForward(float Value)
 
 void ASI_JustSurviveCharacter::MoveRight(float Value)
 {
+	MakeNoise(1.0f, this, GetActorLocation());
+
 	if (Value != 0.0f)
 	{
 		// add movement in that direction

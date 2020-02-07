@@ -92,6 +92,9 @@ class ASI_JustSurviveCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
 
+	
+
+
 public:
 	ASI_JustSurviveCharacter();
 
@@ -128,6 +131,10 @@ public:
 	/** Whether to use motion controller location for aiming. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	uint32 bUsingMotionControllers : 1;
+
+	//NoiseEmitter for PawnSensingComponent in Tower class
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
+		class UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 
 protected:
 	
