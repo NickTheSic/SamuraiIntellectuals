@@ -1,0 +1,38 @@
+// Copyright 2020 Samurai Intellectual - Coded by Nick Lemmon
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/Button.h"
+#include "TowerShopButton.generated.h"
+
+/**
+ * Change Log:
+ *
+ *			2/3/2020: Initial creation of this file
+ */
+UCLASS()
+class SI_JUSTSURVIVE_API UTowerShopButton : public UButton
+{
+	GENERATED_BODY()
+	
+public:
+	UTowerShopButton();
+
+	UFUNCTION()
+		void OnButtonClick();
+
+	void SetObjectToCreate(class AItemBase* newItem);
+
+	//
+	void SetupWidgetStyle();
+	void SetDisplayData();
+
+	void SetOwningHud(class UTowerShopMenu* menu); //TODO: Should we check for a function that already does this
+
+protected:
+	class UTowerShopMenu* m_TowerHud = nullptr;
+
+	class AItemBase* m_SpawnItem = nullptr; //TODO: Check if this could be AItemBase or specifically a Tower
+
+};

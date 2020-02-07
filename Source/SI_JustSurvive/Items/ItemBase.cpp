@@ -33,3 +33,8 @@ bool AItemBase::Purchase(ASI_JustSurviveCharacter* character)
 	return false;
 }
 
+FShopData AItemBase::GetShopData()
+{
+	return ItemShopData;
+}
+
