@@ -51,7 +51,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		class UPawnSensingComponent* m_PawnSensingComp;
 
-	//Spawning projectile from top of tower
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		class USceneComponent* FP_MuzzleLocation;
 
