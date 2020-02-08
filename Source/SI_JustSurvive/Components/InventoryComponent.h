@@ -23,26 +23,25 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 protected:
 	AWeaponBase* m_CurrentWeapon; 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory")
-		TArray<AWeaponBase*> m_WeaponArray;
+		TArray< AWeaponBase* > m_WeaponArray;
 
 public:
 	void NextWeapon(); 
 
 	void PreviousWeapon(); 
 
-	void SetCurrentWeapon(AWeaponBase* weapon); 
-
-	AWeaponBase* GetCurrentWeapon(); 
+	void SetCurrentWeapon( AWeaponBase* weapon );  
 
 	int GetWeaponCount(); 
 
-	void AddWeaponToInventory(AWeaponBase* weapon); 
+	void AddWeaponToInventory( AWeaponBase* weapon ); 
 
-		
+	UFUNCTION(BlueprintCallable)
+		AWeaponBase* GetCurrentWeapon() { return m_CurrentWeapon; }
 };

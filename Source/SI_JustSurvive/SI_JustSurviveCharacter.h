@@ -168,6 +168,9 @@ public:
 
 	void SetupRay(FVector& StartTrace, FVector& Direction, FVector& EndTrace);
 
+	UFUNCTION(BlueprintCallable)
+		UInventoryComponent* GetInventoryComponent() {return m_InventoryComponent;}
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunStuff")

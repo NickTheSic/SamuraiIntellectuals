@@ -63,7 +63,7 @@ void AWeaponBase::Shoot()
 		UWorld* const World = GetWorld(); 
 		if (World != NULL)
 		{
-			if (m_AmmoInClip > 0)
+			if (m_GunData.m_AmmoInClip > 0)
 			{
 				const FRotator SpawnRotation = m_Character->GetControlRotation();
 
@@ -79,7 +79,7 @@ void AWeaponBase::Shoot()
 					// spawn the projectile at the muzzle
 					World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 
-					m_AmmoInClip--; 
+					m_GunData.m_AmmoInClip--; 
 				}
 			}
 		}
@@ -89,7 +89,7 @@ void AWeaponBase::Shoot()
 void AWeaponBase::PullTrigger()
 {
 	FTimerManager& Timer = GetWorldTimerManager();
-	Timer.SetTimer(m_FireRateTimer, this, &AWeaponBase::Shoot, m_FireRate, true);
+	Timer.SetTimer(m_FireRateTimer, this, &AWeaponBase::Shoot, m_GunData.m_FireRate, true);
 }
 
 void AWeaponBase::ReleaseTrigger()
@@ -99,24 +99,24 @@ void AWeaponBase::ReleaseTrigger()
 
 void AWeaponBase::Reload()
 {
-	int ammocheck = m_TotalAmmo - (m_ClipSize - m_AmmoInClip);
+	int ammocheck = m_GunData.m_TotalAmmo - (m_GunData.m_ClipSize - m_GunData.m_AmmoInClip);
 
 	if (ammocheck > 0)
 	{
-		m_TotalAmmo -= m_ClipSize - m_AmmoInClip;
-		m_AmmoInClip = m_ClipSize;
+		m_GunData.m_TotalAmmo -= m_GunData.m_ClipSize - m_GunData.m_AmmoInClip;
+		m_GunData.m_AmmoInClip = m_GunData.m_ClipSize;
 	}
 	else if (ammocheck < 0 )
 	{
-		if ((m_AmmoInClip + m_TotalAmmo) <= m_ClipSize)
+		if ((m_GunData.m_AmmoInClip + m_GunData.m_TotalAmmo) <= m_GunData.m_ClipSize)
 		{
-			m_AmmoInClip += m_TotalAmmo;
-			m_TotalAmmo = 0;
+			m_GunData.m_AmmoInClip += m_GunData.m_TotalAmmo;
+			m_GunData.m_TotalAmmo = 0;
 		}
 	}
 	else
 	{
-		m_AmmoInClip = m_TotalAmmo; 
-		m_TotalAmmo = 0; 
+		m_GunData.m_AmmoInClip = m_GunData.m_TotalAmmo;
+		m_GunData.m_TotalAmmo = 0;
 	}
 }

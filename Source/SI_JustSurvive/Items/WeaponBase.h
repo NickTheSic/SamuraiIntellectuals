@@ -4,11 +4,34 @@
 
 #include "CoreMinimal.h"
 #include "ItemBase.h"
+#include <Engine/Texture.h>
 #include "WeaponBase.generated.h"
 
-/**
- * 
- */
+
+USTRUCT(BlueprintType)
+struct FGunData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunData")
+		int32 m_Cost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunData")
+		int32 m_AmmoInClip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunData")
+		int32 m_ClipSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunData")
+		int32 m_TotalAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunData")
+		float m_FireRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GunData")
+		UTexture* m_UITexture;
+};
+
 UCLASS()
 class SI_JUSTSURVIVE_API AWeaponBase : public AItemBase
 {
@@ -43,6 +66,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Gun")
 		float m_FireRate; 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
+		FGunData m_GunData;
+
 	FTimerHandle m_FireRateTimer; 
 
 	//TODO: Add A Gun Data struct to represent: cost, image for ui, ammo in clip, clip size, fire rate, total ammo
@@ -58,5 +84,17 @@ public:
 	void PullTrigger(); 
 	void ReleaseTrigger(); 
 	void Reload(); 
+
+	UFUNCTION(BlueprintCallable)
+		UTexture* GetGunTexture() { return m_GunData.m_UITexture; }
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetTotalAmmo() { return m_GunData.m_TotalAmmo; }
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetAmmoInClip() { return m_GunData.m_AmmoInClip; }
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetClipSize() { return m_GunData.m_ClipSize; }
 
 };

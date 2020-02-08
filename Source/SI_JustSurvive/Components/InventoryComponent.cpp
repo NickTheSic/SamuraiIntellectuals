@@ -87,11 +87,6 @@ void UInventoryComponent::SetCurrentWeapon(AWeaponBase* weapon)
 	m_CurrentWeapon = weapon;
 }
 
-AWeaponBase* UInventoryComponent::GetCurrentWeapon()
-{
-	return m_CurrentWeapon;
-}
-
 int UInventoryComponent::GetWeaponCount()
 {
 	return m_WeaponArray.Num();

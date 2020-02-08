@@ -6,6 +6,7 @@
 #include "TextureResource.h"
 #include "CanvasItem.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Blueprint/UserWidget.h"
 
 ASI_JustSurviveHUD::ASI_JustSurviveHUD()
 {
@@ -32,4 +33,11 @@ void ASI_JustSurviveHUD::DrawHUD()
 	FCanvasTileItem TileItem( CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem( TileItem );
+}
+
+void ASI_JustSurviveHUD::BeginPlay()
+{
+	PlayerGui = CreateWidget<UUserWidget>(GetGameInstance(), PlayerGuiClass);
+
+	PlayerGui->AddToViewport();
 }
