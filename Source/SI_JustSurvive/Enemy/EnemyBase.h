@@ -1,30 +1,25 @@
-// Copyright 2020 Samurai Intellectuals
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WaypointGroup.generated.h"
+#include "EnemyBase.generated.h"
 
 /*
 *	Change Log:
-*			
-*			Initial creation - Nick
+*
+*			2/8/2020: Nick: Initial Creation.  I am not sure how to do behaviour trees
 */
 
 UCLASS()
-class SI_JUSTSURVIVE_API AWaypointGroup : public AActor
+class SI_JUSTSURVIVE_API AEnemyBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWaypointGroup();
-
-	UPROPERTY(EditAnywhere, Category = "Waypoints")
-		TArray<class AWaypoint*> m_Waypoints;
-
-	class AWaypoint* GetRandomWaypoint();
+	AEnemyBase();
 
 protected:
 	// Called when the game starts or when spawned

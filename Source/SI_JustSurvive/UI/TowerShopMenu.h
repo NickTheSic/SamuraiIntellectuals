@@ -10,11 +10,14 @@
 #include "TowerShopMenu.generated.h"
 
 /**
- * Change log:
- *			TODO: Check about using a CameraActor instead of making your own.  Might not work since it is an actor not a pawn
- *			TODO:  Check over TODOs that can be fixed after a merge
+ * Change log:			TODO:  Check over TODOs that can be fixed after a merge
+ *
+ *			2/8/2020:	Found out that there are functions in here that I am making (SetPlayerController)
+ *						I might find out how to use them specifically or continue using mine
+*
  *			2/3/2020: Initial creation of this file
  */
+
 UCLASS()
 class SI_JUSTSURVIVE_API UTowerShopMenu : public UUserWidget
 {
@@ -24,12 +27,12 @@ public:
 	void NativeConstruct() override;
 	void NativeDestruct() override;
 
-	void SetOwningPlayerController(class APlayerController* pc); //TODO: Check if something like this function exists
+	void SetOwningPlayerController(class ASI_PlayerController* pc); //TODO: A Function exists like this, look into it but will use this until then
 
 	void SetDisplayText(FShopData& data);
 
 protected:
-	class APlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
+	class ASI_PlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
 
 	//The purchaseable towers
 	UPROPERTY(EditAnywhere, Category = "Config")
@@ -37,7 +40,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Config")
 		TSubclassOf<class UTowerShopButton> ButtonTemplate;
-
 
 	//The following components need to be created with the same type and name inside the hud blueprint
 	//TODO: Might need to add more to this list at a later date

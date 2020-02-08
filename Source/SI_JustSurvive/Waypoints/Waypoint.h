@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2020 Samurai Intellectuals
 
 #pragma once
 
@@ -7,7 +7,8 @@
 #include "Waypoint.generated.h"
 
 /**
- * 
+ * Change Log:
+ *				Initial Creation - Nick
  */
 UCLASS()
 class SI_JUSTSURVIVE_API AWaypoint : public ATargetPoint
