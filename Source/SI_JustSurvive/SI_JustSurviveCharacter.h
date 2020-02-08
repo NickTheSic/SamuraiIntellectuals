@@ -112,8 +112,6 @@ public:
 	//NoiseEmitter for PawnSensingComponent in Tower class
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
 		class UPawnNoiseEmitterComponent* NoiseEmitterComponent;
-
-protected:
 	
 	/** Fires a projectile. */
 	void OnFire();

@@ -31,7 +31,7 @@ public:
 	void OnPossess(class APawn* aPawn) override;
 	void OnUnPossess() override;
 
-	void SetupInputComponent();
+	void SetupInputComponent() override;
 
 
 	//I'll make this public for now
