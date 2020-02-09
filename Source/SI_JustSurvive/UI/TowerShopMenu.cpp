@@ -4,6 +4,7 @@
 #include "TowerShopMenu.h"
 
 #include "Blueprint/WidgetTree.h"
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
 #include "TowerShopButton.h"
@@ -21,6 +22,11 @@ void UTowerShopMenu::NativeConstruct()
 
 	unsigned numberOfItems = m_ItemsToDisplay.Num();
 
+	if (!m_ExitButton->OnClicked.IsBound())
+	{
+		m_ExitButton->OnClicked.AddDynamic(this, &UTowerShopMenu::ExitMenu);
+	}
+
 	if (ButtonTemplate && numberOfItems != 0)
 	{
 		for (int i = 0; i != numberOfItems; i++)
@@ -36,6 +42,8 @@ void UTowerShopMenu::NativeConstruct()
 			m_TowerList->AddChild(tsButton);
 		}
 	}
+
+	ClearDisplayText();
 }
 
 void UTowerShopMenu::NativeDestruct()
@@ -43,16 +51,17 @@ void UTowerShopMenu::NativeDestruct()
 	Super::NativeDestruct();
 	//Clear childern of the TowerList -> Due to a duplication glitch. This was the easiest fix I could think of
 	m_TowerList->ClearChildren();
+
+	ClearDisplayText();
 }
 
 void UTowerShopMenu::SetOwningPlayerController(ASI_PlayerController* pc)
 {
 	check(pc && "Player Controller Was null");
 
-	SetOwningPlayer(pc);
-
 	if (pc)
 	{
+		SetOwningPlayer(pc);
 		m_OwningPC = pc;
 	}
 }
@@ -62,4 +71,18 @@ void UTowerShopMenu::SetDisplayText(FShopData& data)
 	//Set the text of our text objects. Will change as needed
 	SetObjectText(m_NameText, data.m_ItemName.ToString());
 	SetObjectText(m_CostText, FString::FromInt(data.m_Cost));
+}
+
+void UTowerShopMenu::ClearDisplayText()
+{
+	SetObjectText(m_NameText, "");
+	SetObjectText(m_CostText, "");
+}
+
+void UTowerShopMenu::ExitMenu()
+{
+	if (m_OwningPC)
+	{
+		m_OwningPC->ExitTowerShopMenu();
+	}
 }

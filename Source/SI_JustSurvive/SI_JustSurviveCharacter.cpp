@@ -13,8 +13,10 @@
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Components/InventoryComponent.h"
 #include "Items/WeaponBase.h"
+#include "Interactable/TowerTerminal.h"
 #include "DrawDebugHelpers.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "Player/SI_PlayerController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -86,9 +88,26 @@ void ASI_JustSurviveCharacter::Tick(float DeltaTime)
 				m_InventoryComponent->GetCurrentWeapon()->PickUp(this);
 				bHasGun = true;
 
-				GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("Weapon"));
+				GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Blue, TEXT("Weapon"));
 			}
 		}
+
+		if (Cast<ATowerTerminal>(HitActor))
+		{
+			if (bIsInteracting)
+			{
+				if (ASI_PlayerController * pc = Cast< ASI_PlayerController>(GetController()))
+				{
+					pc->EnterTowerShopMenu();
+				}
+			}
+		}
+
+	}
+	else
+	{
+		//TODO: Make E to interact text dissapear
+		//Reset any sort of raytrace thing?
 	}
 
 	if (!bHasGun)
@@ -110,27 +129,6 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 {
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
-
-	// Bind jump events
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASI_JustSurviveCharacter::OnFire);
-
-	//Bind weapon event
-	PlayerInputComponent->BindAxis("ChangeWeapon", this, &ASI_JustSurviveCharacter::ChangeWeapon); 
-	PlayerInputComponent->BindAction("PullTrigger", IE_Pressed, this, &ASI_JustSurviveCharacter::PullTrigger); 
-	PlayerInputComponent->BindAction("ReleaseTrigger", IE_Released, this, &ASI_JustSurviveCharacter::ReleaseTrigger); 
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASI_JustSurviveCharacter::Reload); 
-
-	//Bind PlayerInteraction
-	PlayerInputComponent->BindAction("StartInteraction", IE_Pressed, this, &ASI_JustSurviveCharacter::StartInteraction);
-	PlayerInputComponent->BindAction("StopInteraction", IE_Released, this, &ASI_JustSurviveCharacter::StopInteraction);
-
-	// Bind movement events
-	PlayerInputComponent->BindAxis("MoveForward", this, &ASI_JustSurviveCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASI_JustSurviveCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.

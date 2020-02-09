@@ -9,6 +9,8 @@
 /*
 *Change Log:
 *
+*			2/9/2020: Nick - I made the camera a UPROPERTY so we edit in the editor
+
 *			2/8/2020: Nick - Initial Creation.  Need to clean up the todos at a later time
 */
 
@@ -30,19 +32,22 @@ public:
 
 	void EnteringShop();
 	void ExitingShop();
+
+	bool GetIsActiveInShop();
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	class UCameraComponent* m_CameraComponent; //The camera
+	UPROPERTY(EditAnywhere, Category = "Camera")
+		class UCameraComponent* m_CameraComponent; //The camera
 
 	class AItemBase* m_PlaceableTower; //The current active object
 
 	bool bIsActiveInShop = false;
 
-
 	//TODO: I want to add a texture that follows the mouse so that it can be changed.  Showing the player it can and cant be placed
+
 
 public:	
 	// Called every frame

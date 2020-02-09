@@ -14,9 +14,9 @@ AShopCameraPawn::AShopCameraPawn()
 
 	m_CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	//TODO: Setup more defaults here
-
 	//Raycasting works better in orthographic mode
 	m_CameraComponent->SetProjectionMode(ECameraProjectionMode::Orthographic);
+	m_CameraComponent->SetOrthoWidth(5000);
 
 	bIsActiveInShop = false;
 	m_PlaceableTower = nullptr;
@@ -65,6 +65,11 @@ void AShopCameraPawn::ExitingShop()
 	bIsActiveInShop = false;
 	m_PlaceableTower = nullptr;
 
+}
+
+bool AShopCameraPawn::GetIsActiveInShop()
+{
+	return bIsActiveInShop;
 }
 
 // Called when the game starts or when spawned

@@ -12,6 +12,8 @@
 /**
  * Change log:			TODO:  Check over TODOs that can be fixed after a merge
  *
+			2/9/2020: Nick - Added an Exit menu button and added the dynamic delegate to call the exit menu
+
  *			2/8/2020:	Found out that there are functions in here that I am making (SetPlayerController)
  *						I might find out how to use them specifically or continue using mine
 *
@@ -24,12 +26,18 @@ class SI_JUSTSURVIVE_API UTowerShopMenu : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+
 	void NativeConstruct() override;
 	void NativeDestruct() override;
 
 	void SetOwningPlayerController(class ASI_PlayerController* pc); //TODO: A Function exists like this, look into it but will use this until then
 
 	void SetDisplayText(FShopData& data);
+
+	void ClearDisplayText();
+
+	UFUNCTION()
+		void ExitMenu();
 
 protected:
 	class ASI_PlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
@@ -51,5 +59,8 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* m_CostText = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+		class UButton* m_ExitButton = nullptr;
 
 };

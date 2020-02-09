@@ -52,6 +52,9 @@ public:
 	void MoveRight(float val);
 
 	void OnMouseClick(); //Will call fire on PlayerCharacter, but will do something else in the shop menu
+	void OnClickReleased(); 
+	void Reload(); 
+	void ChangeWeapon(float val);
 
 protected:
 

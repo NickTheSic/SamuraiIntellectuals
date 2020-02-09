@@ -9,6 +9,8 @@
 /**
  * Change Log:
  *
+ *			2/9/2020: Nick - I added a null texture check when setting the button texture among other things to the widget style
+
  *			2/3/2020: Initial creation of this file
  */
 UCLASS()

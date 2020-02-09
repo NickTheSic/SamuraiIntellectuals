@@ -65,23 +65,26 @@ void UTowerShopButton::SetupWidgetStyle()
 	FShopData displayDat = m_SpawnItem->GetShopData();
 
 	UTexture* t = displayDat.m_Texture;
-	FVector2D imageSize(t->GetSurfaceWidth(), t->GetSurfaceHeight()); //TODO Get actual size
+	//
+	if (t != nullptr)
+	{
+		FVector2D imageSize(t->GetSurfaceWidth(), t->GetSurfaceHeight()); //TODO Get actual size
+		//Keep a consistent widget style between the main 3 buttons
+		//Normal is for how the button looks
+		WidgetStyle.Normal.SetResourceObject(t);
+		WidgetStyle.Normal.SetImageSize(imageSize);
 
-	//Keep a consistent widget style between the main 3 buttons
-	//Normal is for how the button looks
-	WidgetStyle.Normal.SetResourceObject(t);
-	WidgetStyle.Normal.SetImageSize(imageSize);
+		//Hovered for when the mouse is over it
+		WidgetStyle.Hovered.SetResourceObject(t);
+		WidgetStyle.Hovered.SetImageSize(imageSize);
 
-	//Hovered for when the mouse is over it
-	WidgetStyle.Hovered.SetResourceObject(t);
-	WidgetStyle.Hovered.SetImageSize(imageSize);
+		//Pressed for when the player clicks it
+		WidgetStyle.Pressed.SetResourceObject(t);
+		WidgetStyle.Pressed.SetImageSize(imageSize);
 
-	//Pressed for when the player clicks it
-	WidgetStyle.Pressed.SetResourceObject(t);
-	WidgetStyle.Pressed.SetImageSize(imageSize);
-
-	//TODO: Maybe add a Disabled widget style?
-
+		//TODO: Maybe add a Disabled widget style?  
+		//TODO: Will require a check to the Cost of the players money while entering the shop
+	}
 }
 
 void UTowerShopButton::SetDisplayData()
