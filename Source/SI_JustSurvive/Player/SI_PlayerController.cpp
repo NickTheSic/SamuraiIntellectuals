@@ -68,7 +68,7 @@ void ASI_PlayerController::Jump()
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+		Char->Jump(); 
 	}
 
 }
@@ -77,7 +77,7 @@ void ASI_PlayerController::StopJumping()
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+		Char->StopJumping(); 
 	}
 }
 
@@ -85,7 +85,7 @@ void ASI_PlayerController::StartInteraction()
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+		Char->StartInteraction(); 
 	}
 }
 
@@ -93,7 +93,7 @@ void ASI_PlayerController::StopInteraction()
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+		Char->StopInteraction();
 	}
 }
 
@@ -101,7 +101,7 @@ void ASI_PlayerController::MoveForward(float val)
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+		Char->MoveForward(val); 
 	}
 }
 
@@ -109,7 +109,7 @@ void ASI_PlayerController::MoveRight(float val)
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+		Char->MoveRight(val); 
 	}
 }
 
@@ -117,7 +117,7 @@ void ASI_PlayerController::OnMouseClick()
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{
-
+	
 	}
 
 	//if it is a CameraPawn

@@ -112,8 +112,6 @@ public:
 	//NoiseEmitter for PawnSensingComponent in Tower class
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
 		class UPawnNoiseEmitterComponent* NoiseEmitterComponent;
-
-protected:
 	
 	/** Fires a projectile. */
 	void OnFire();
@@ -167,6 +165,9 @@ public:
 	AActor* GetPickableActor_LineTraceSingleByChannel(ECollisionChannel CollisionChannel);
 
 	void SetupRay(FVector& StartTrace, FVector& Direction, FVector& EndTrace);
+
+	UFUNCTION(BlueprintCallable)
+		UInventoryComponent* GetInventoryComponent() {return m_InventoryComponent;}
 
 protected:
 

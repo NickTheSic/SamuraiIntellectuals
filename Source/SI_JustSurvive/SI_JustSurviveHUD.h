@@ -17,6 +17,15 @@ public:
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
 
+	UPROPERTY(EditAnywhere, Category = "Game Hud")
+		TSubclassOf<class UUserWidget> PlayerGuiClass;
+
+	UPROPERTY()
+		class UUserWidget* PlayerGui;
+
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	/** Crosshair asset pointer */
 	class UTexture2D* CrosshairTex;
