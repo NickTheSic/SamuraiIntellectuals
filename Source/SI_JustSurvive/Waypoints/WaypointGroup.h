@@ -1,10 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2020 Samurai Intellectuals
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WaypointGroup.generated.h"
+
+/*
+*	Change Log:
+*			
+*			Initial creation - Nick
+*/
 
 UCLASS()
 class SI_JUSTSURVIVE_API AWaypointGroup : public AActor

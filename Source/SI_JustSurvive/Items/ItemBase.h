@@ -43,7 +43,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool Purchase(class ASI_JustSurviveCharacter* character);
+	virtual bool Purchase(class ASI_JustSurviveCharacter* character); //TODO: Change this to Player Controller
 
 	FShopData GetShopData();
 

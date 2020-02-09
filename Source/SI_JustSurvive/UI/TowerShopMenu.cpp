@@ -8,7 +8,7 @@
 #include "Components/ScrollBox.h"
 #include "TowerShopButton.h"
 
-#include "GameFramework/PlayerController.h" //TODO: Change this to the official player controller
+#include "../Player/SI_PlayerController.h" //TODO: Change this to the official player controller
 
 //A Safe set text macro to make sure the Text object isn't null before we try to set its text
 #define SetObjectText(t, s); if (t) { FText text; t->SetText(text.FromString(s));}
@@ -40,15 +40,17 @@ void UTowerShopMenu::NativeConstruct()
 
 void UTowerShopMenu::NativeDestruct()
 {
+	Super::NativeDestruct();
 	//Clear childern of the TowerList -> Due to a duplication glitch. This was the easiest fix I could think of
 	m_TowerList->ClearChildren();
-
-	Super::NativeDestruct();
 }
 
-void UTowerShopMenu::SetOwningPlayerController(APlayerController* pc)
+void UTowerShopMenu::SetOwningPlayerController(ASI_PlayerController* pc)
 {
-	check(pc && "Player Controller issue");
+	check(pc && "Player Controller Was null");
+
+	SetOwningPlayer(pc);
+
 	if (pc)
 	{
 		m_OwningPC = pc;

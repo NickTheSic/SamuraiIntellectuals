@@ -22,6 +22,8 @@ public:
 	UFUNCTION()
 		void OnButtonClick();
 
+	void GiveSpawnItemToPlayer();
+
 	void SetObjectToCreate(class AItemBase* newItem);
 
 	//
