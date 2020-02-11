@@ -7,6 +7,10 @@
 #include <Engine/Texture.h>
 #include "WeaponBase.generated.h"
 
+/*
+	Change Log:
+			2/10/2020: Nick - I changed purchase to take a player controller
+*/
 
 USTRUCT(BlueprintType)
 struct FGunData
@@ -84,6 +88,8 @@ public:
 	void PullTrigger(); 
 	void ReleaseTrigger(); 
 	void Reload(); 
+
+	bool Purchase(class ASI_PlayerController* character) override;
 
 	UFUNCTION(BlueprintCallable)
 		UTexture* GetGunTexture() { return m_GunData.m_UITexture; }

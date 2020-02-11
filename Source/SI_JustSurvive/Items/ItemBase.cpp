@@ -2,6 +2,8 @@
 
 
 #include "ItemBase.h"
+#include "../Player/SI_PlayerController.h"
+#include "../Player/SI_PlayerState.h"
 
 // Sets default values
 AItemBase::AItemBase()
@@ -25,10 +27,20 @@ void AItemBase::Tick(float DeltaTime)
 
 }
 
-bool AItemBase::Purchase(ASI_JustSurviveCharacter* character)
+bool AItemBase::Purchase(ASI_PlayerController* character)
 {
 	//TODO: This function will check the player's money, and if there is enough to purchase it will reduce the player's total money. 
 	//TODO: Derived classes will call Super for this function to check player's money. 
+
+	//TODO: Get the player state and make sure htis wokrs
+	ASI_PlayerState* ps = character->GetPlayerState<ASI_PlayerState>();
+
+	if (ps)
+	{
+		//TODO:
+		//If has enough money return true and steal money
+		//Else return false
+	}
 
 	return false;
 }

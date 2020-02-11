@@ -8,7 +8,8 @@
 
 /*
 *	Change Log:
-*			
+*			2/10/2020: Nick - Added on screen dbg message
+							- Fixed some logical issues
 *			Initial creation - Nick
 */
 

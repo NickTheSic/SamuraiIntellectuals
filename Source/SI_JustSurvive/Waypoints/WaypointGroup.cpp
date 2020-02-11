@@ -3,6 +3,9 @@
 
 #include "WaypointGroup.h"
 #include "Waypoint.h"
+#include "Engine.h"
+
+#define debugprint(string); GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, string)
 
 // Sets default values
 AWaypointGroup::AWaypointGroup()
@@ -19,15 +22,27 @@ AWaypoint* AWaypointGroup::GetRandomWaypoint()
 	AWaypoint* testWaypoint = nullptr; //I only want to test it a few times for a new random waypoint
 	unsigned int tries = 0;
 
-	//TODO: Possibly rewrite this function
+	//TODO: Probably clean up my debug stuff - Nick
+
+	debugprint("Entered the Get Random waypoint function");
+
+	//TODO: Possibly rewrite this function.  This also looks messy
 	while (testWaypoint == nullptr && tries < 3)
 	{
-		int randomPoint = FMath::RandRange(0, m_Waypoints.Num());
+		int randomPoint = FMath::RandRange(0, m_Waypoints.Num() - 1);
+
+		check(randomPoint < m_Waypoints.Num() && "The random point was greater than or eqaul to the num"); //Logical issue on random
+
 		if (m_Waypoints[randomPoint] != nullptr && m_Waypoints[randomPoint]->GetIsWaypointTaken() == false) //If the waypoint isn't taken or a nullptr we can use it
 		{
+			FString str = TEXT("Testing finding a waypoint in waypoint: ");
+			str.AppendInt(randomPoint);
+			debugprint(str);
 			testWaypoint = m_Waypoints[randomPoint];
 			break; //Break out of the while loop and go to return the testWaypoint
 		}
+
+		debugprint ("Finding waypoint looped");
 		tries++;
 	}
 

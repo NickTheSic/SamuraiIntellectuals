@@ -6,6 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "ItemBase.generated.h"
 
+/*
+	Change Log:
+			2/10/2020: Nick - I changed purchase to take a player controller
+*/
+
 USTRUCT()
 struct SI_JUSTSURVIVE_API FShopData
 {
@@ -43,7 +48,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool Purchase(class ASI_JustSurviveCharacter* character); //TODO: Change this to Player Controller
+	virtual bool Purchase(class ASI_PlayerController* character); //TODO: Change this to Player Controller
 
 	FShopData GetShopData();
 

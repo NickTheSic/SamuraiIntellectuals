@@ -8,6 +8,7 @@
 
 /*
 	Change Log:
+			2/10/2020: Nick - Added onscreen dbg message
 			2/9/2020: Nick - Initial Creation.  I feel like it would be nice to add a single pointer to all the groups
 */
 
@@ -20,13 +21,15 @@ public:
 	// Sets default values for this actor's properties
 	AWaypointManager();
 
-	class AWaypoint* GetRandomWaypoint(unsigned int group);
+	class AWaypoint* GetRandomWaypoint( int group);
+
+	int GetWaypointGroupSize();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//TODO: Fix this
-	//TArray<class AWaypointGroup*> m_WaypointGroups;
-
+	UPROPERTY(EditAnywhere, Category="Waypoint")
+		TArray<class AWaypointGroup*> m_WaypointGroups;
+	
 };

@@ -5,6 +5,10 @@
 #include "Waypoint.h"
 #include "WaypointGroup.h"
 
+#include "Engine.h"
+
+#define debugprint(string); GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, string)
+
 // Sets default values
 AWaypointManager::AWaypointManager()
 {
@@ -13,18 +17,26 @@ AWaypointManager::AWaypointManager()
 
 }
 
-AWaypoint* AWaypointManager::GetRandomWaypoint(unsigned int group)
+AWaypoint* AWaypointManager::GetRandomWaypoint( int group)
 {
-	//ToDO: Fix this
-	//check(m_WaypointGroups.Num() == 0 && "The waypoints number was empty");
-	//check(group > 0 && group < m_WaypointGroups.Num() && "This group is out of range"); //TODO: Make sure that these check statements are the right way
-	//
-	//if (group > 0 && group < m_WaypointGroups.Num())
-	//{
-	//	return m_WaypointGroups[group]->GetRandomWaypoint();
-	//}
+	//ToDO: MAke sure that this works
+	check(m_WaypointGroups.Num() != 0 && "The waypoints number was empty");
+	check(group >= 0 && group < m_WaypointGroups.Num() && "This group is out of range"); //TODO: Make sure that these check statements are the right way
+	
+	debugprint("Entered the GetRandom Waypoint function");
+
+	if (group >= 0 && group < m_WaypointGroups.Num())
+	{
+		debugprint("Waypoint Manager->Geting random waypoint");
+		return m_WaypointGroups[group]->GetRandomWaypoint();
+	}
 
 	return nullptr; //Will always need to check for nullptr when getting a random waypoint
+}
+
+int AWaypointManager::GetWaypointGroupSize()
+{
+	return m_WaypointGroups.Num();
 }
 
 // Called when the game starts or when spawned

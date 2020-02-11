@@ -120,3 +120,23 @@ void AWeaponBase::Reload()
 		m_GunData.m_TotalAmmo = 0;
 	}
 }
+
+bool AWeaponBase::Purchase(ASI_PlayerController* character)
+{
+	bool bCanPurchase = AItemBase::Purchase(character);
+
+	if (bCanPurchase) //NOTE: If true we have already taken the playres money
+	{
+		//Purchase
+		return true;
+	}
+
+	else
+
+	{
+		//Do nothing, not needed but I added this section anyway. - Nick
+		return false;
+	}
+
+	return false;
+}
