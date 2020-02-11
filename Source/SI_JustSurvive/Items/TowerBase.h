@@ -6,6 +6,11 @@
 #include "ItemBase.h"
 #include "TowerBase.generated.h"
 
+/*
+	Change Log:
+			2/10/2020: Nick - I changed purchase to take a player controller
+*/
+
 USTRUCT()
 struct FTowerData
 {
@@ -72,5 +77,5 @@ protected:
 public:
 	void ShootProjectile();
 
-	virtual bool Purchase(ASI_JustSurviveCharacter* player);
+	virtual bool Purchase(ASI_PlayerController* player);
 };

@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "SI_JustSurvive/SI_JustSurviveProjectile.h"
+#include "..//Player/SI_PlayerController.h"
 
 ATowerBase::ATowerBase()
 {
@@ -79,7 +80,18 @@ void ATowerBase::ShootProjectile()
 	bCanShoot = false;
 }
 
-bool ATowerBase::Purchase(ASI_JustSurviveCharacter * player)
+bool ATowerBase::Purchase(ASI_PlayerController* player)
 {
+	bool bCanPurchase = AItemBase::Purchase(player);
+	if (bCanPurchase)
+	{
+		//Purchase
+		return true;
+	}
+	else
+	{
+		//Do nothing
+		return false;
+	}
 	return false;
 }
