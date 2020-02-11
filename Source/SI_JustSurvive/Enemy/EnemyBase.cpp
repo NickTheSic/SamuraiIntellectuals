@@ -9,7 +9,7 @@
 #include "AIModule/Classes/Blueprint/AIBlueprintHelperLibrary.h"
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
-//#include "Components/SkeletalMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -40,7 +40,10 @@ void AEnemyBase::BeginPlay()
 		FindWaypointManager();
 	}
 
-
+	if (EnemyData.m_EnemyMesh != nullptr)
+	{
+		GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
+	}
 
 }
 

@@ -16,7 +16,7 @@ AWaypointManager::AWaypointManager()
 AWaypoint* AWaypointManager::GetRandomWaypoint( int group)
 {
 	//ToDO: MAke sure that this works
-	check(m_WaypointGroups.Num() == 0 && "The waypoints number was empty");
+	check(m_WaypointGroups.Num() != 0 && "The waypoints number was empty");
 	check(group > 0 && group < m_WaypointGroups.Num() && "This group is out of range"); //TODO: Make sure that these check statements are the right way
 	
 	if (group > 0 && group < m_WaypointGroups.Num())
