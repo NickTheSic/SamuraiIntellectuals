@@ -3,6 +3,7 @@
 #include "SI_JustSurviveProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/DamageType.h"
 
 ASI_JustSurviveProjectile::ASI_JustSurviveProjectile() 
 {
@@ -38,6 +39,18 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
+		/*float DamageAmount = 40.0f;
+
+		AController* MyInstigatorsController = nullptr;
+		APawn* MyInstigator = this->Instigator;
+
+		
+
+		TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
+		FDamageEvent DamageEvent(ValidDamageTypeClass);
+
+		OtherActor->TakeDamage(DamageAmount, DamageEvent, MyInstigatorsController, this);
+*/
 		Destroy();
 	}
 }

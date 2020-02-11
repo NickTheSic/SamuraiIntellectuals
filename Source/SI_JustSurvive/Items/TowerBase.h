@@ -46,16 +46,16 @@ public:
 	FTowerData m_TowerData;
 
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		class UStaticMeshComponent* TowerMesh;
+		class UStaticMeshComponent* m_TowerMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		class UPawnSensingComponent* m_PawnSensingComp;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-		class USceneComponent* FP_MuzzleLocation;
+	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
+		class USceneComponent* m_MuzzleLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectiles")
-		TSubclassOf<class ASI_JustSurviveProjectile> ProjectileTemplate;
+		TSubclassOf<class ASI_JustSurviveProjectile>m_ProjectileTemplate;
 
 	FTimerHandle SpawnProjectileTimer;
 
