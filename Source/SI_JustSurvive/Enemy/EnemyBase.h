@@ -38,6 +38,9 @@ struct SI_JUSTSURVIVE_API FEnemyData
 
 	UPROPERTY(EditAnywhere, Category = "Config")
 		float m_DistanceToPoint = 100;
+
+	UPROPERTY(EditAnywhere, Category = "Config")
+		float m_EnemySpeed = 50; //TODO: Actually set this up to work
 };
 
 

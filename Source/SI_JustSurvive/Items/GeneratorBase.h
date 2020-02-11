@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageMesh")
 		class USceneComponent* GeneratorRoot;
 
-	UPROPERTY(VisibleAnywhere, BluepringReadWrite, Category = "DamageMesh")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageMesh")
 		class UStaticMeshComponent* GeneratorBody;
 
 	int m_HP = 100;
