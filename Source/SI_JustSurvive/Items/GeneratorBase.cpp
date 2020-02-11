@@ -17,7 +17,7 @@ AGeneratorBase::AGeneratorBase()
 	RootComponent = GeneratorRoot;
 
 	GeneratorBody = CreateDefaultSubobject<UStaticMeshComponent>("Generator Mesh");
-
+	//ADDED END
 
 }
 
