@@ -11,6 +11,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
 
+#define debugprint(string); GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, string)
+
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
@@ -52,6 +54,7 @@ void AEnemyBase::FindWaypointManager()
 	//We only want to do this if the waypoint manager is null
 	if (m_WaypointManager == nullptr) //Probably a redundant check
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Finding Waypoint Manager");
 
 		TArray<AActor*> singleWaypointManager;
 
@@ -66,6 +69,7 @@ void AEnemyBase::FindWaypointManager()
 		if (newManager)
 		{
 			m_WaypointManager = newManager;
+			debugprint("Waypoint Manager Found");
 		}
 
 	}
@@ -80,13 +84,17 @@ void AEnemyBase::GetNewWaypoint()
 	{
 		check(m_WaypointManager->GetWaypointGroupSize() != 0);
 
+		debugprint("Finding Waypoint");
+
 		if (m_TargetWaypoint == nullptr || m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
 		{
+			debugprint("Targetpoint was null, waypoint group size was in range or somethin");
 			m_CurrentWaypointGroup = 0;
 			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
 		}
 		else
 		{
+			debugprint("Looping through other waypoints");
 			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
 		}
 
@@ -109,9 +117,10 @@ void AEnemyBase::Tick(float DeltaTime)
 
 		float DistanceSize = DistanceVector.Size();
 
-		if (DistanceSize < 150)
+		if (DistanceSize < EnemyData.m_DistanceToPoint)
 		{
 			//TODO: Make this change states instead of getting a new Waypoint
+			debugprint("Within distance! Changing");
 			GetNewWaypoint();
 		}
 

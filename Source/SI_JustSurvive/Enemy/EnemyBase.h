@@ -11,6 +11,8 @@
 *			
 *			2/10/2020: Nick - Added 2 functions. 1 to GetNewWaypoint and something to find the waypoint manager 
 							- Made this inherit from ACharacter because that has a controller
+							- Added a distance that is editable and debug messages
+							-The AI Follows the path
 *			2/9/2020: Nick - I added a Waypoint manager
 *			2/8/2020: Nick - Initial Creation.  I am not sure how to do behaviour trees
 */
@@ -33,6 +35,9 @@ struct SI_JUSTSURVIVE_API FEnemyData
 	
 	UPROPERTY(EditAnywhere, Category = "Config")
 		class USkeletalMesh* m_EnemyMesh;//TODO: Check if we need a Static or Skeletal and also set it here
+
+	UPROPERTY(EditAnywhere, Category = "Config")
+		float m_DistanceToPoint = 100;
 };
 
 
