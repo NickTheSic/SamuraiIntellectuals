@@ -20,13 +20,15 @@ public:
 	// Sets default values for this actor's properties
 	AWaypointManager();
 
-	class AWaypoint* GetRandomWaypoint(unsigned int group);
+	class AWaypoint* GetRandomWaypoint( int group);
+
+	int GetWaypointGroupSize();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//TODO: Fix this
-	//TArray<class AWaypointGroup*> m_WaypointGroups;
-
+	UPROPERTY(EditAnywhere, Category="Waypoint")
+		TArray<class AWaypointGroup*> m_WaypointGroups;
+	
 };
