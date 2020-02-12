@@ -66,13 +66,14 @@ void UTowerShopButton::SetupWidgetStyle()
 
 	UTexture* t = displayDat.m_Texture;
 
+	//TODO(Nick):  Fix the texture display on the buttons
+
 	//Make sure we have a texture before we try to set it
 	if (t != nullptr)
 	{
 		FVector2D imageSize(t->GetSurfaceWidth(), t->GetSurfaceHeight()); //TODO(Nick) Get actual size
-		imageSize /= 2; //I am hopefully shrinking the size of the texture by a reasonable amount TODO:  
+		imageSize /= 10; //I am hopefully shrinking the size of the texture by a reasonable amount TODO:  
 
-		//Keep a consistent widget style between the main 3 buttons
 		//Normal is for how the button looks
 		WidgetStyle.Normal.SetResourceObject(t);
 		WidgetStyle.Normal.SetImageSize(imageSize);
@@ -85,8 +86,7 @@ void UTowerShopButton::SetupWidgetStyle()
 		WidgetStyle.Pressed.SetResourceObject(t);
 		WidgetStyle.Pressed.SetImageSize(imageSize);
 
-		//TODO(Nick): Maybe add a Disabled widget style?  
-		//Will require a check to the Cost of the players money while entering the shop
+		//TODO(Nick): Maybe add a Disabled widget style?
 	}
 }
 

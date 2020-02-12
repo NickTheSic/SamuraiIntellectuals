@@ -31,20 +31,11 @@ AWaypoint* AWaypointGroup::GetRandomWaypoint()
 
 		if (m_Waypoints[randomPoint] != nullptr && m_Waypoints[randomPoint]->GetIsWaypointTaken() == false) //If the waypoint isn't taken or a nullptr we can use it
 		{
-
 			testWaypoint = m_Waypoints[randomPoint];
 			break; //Break out of the while loop and go to return the testWaypoint
 		}
-
 		tries++;
 	}
-
-#if WITH_EDITOR
-	if (testWaypoint == nullptr)
-	{
-		debugprint("******NULLPTR RETURNED******");
-	}
-#endif //TODO(Nick): A Nullptr debug string Maybe remove?
 
 	return testWaypoint; //TODO: Look into a check about nullptrs and what should happen if all the next way points are filled up
 }

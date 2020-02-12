@@ -12,6 +12,8 @@
 							- Made this inherit from ACharacter because that has a controller
 							- Added a distance that is editable and debug messages
 							-The AI Follows the path
+							-Removed the debug messages from the movement
+
 *			2/9/2020: Nick - I added a Waypoint manager
 *			2/8/2020: Nick - Initial Creation.  I am not sure how to do behaviour trees
 */
@@ -55,10 +57,6 @@ public:
 	//To be set when the enemy is spawned
 	void SetWaypointManager(class AWaypointManager* wayMan);
 
-	//TODO: Remove this bool for release, only want it for debugging
-	UPROPERTY(EditAnywhere, Category = "_Debug")
-		bool bDoesDebugDrawOnScreenMessages = false;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -80,8 +78,8 @@ protected:
 
 	void GetNewWaypoint();
 
-	void GetNextGroup(); //Handles m_CurrentWaypoint group increasing to the next waypoint
-	void GetPreviousGroup(); //Handles m_CurrentWaypoint group getting the previous waypoint
+	void IncrementCurrentWaypointGroup(); 
+	void DecrementCurrentWaypointGroup(); 
 
 public:	
 	// Called every frame

@@ -20,27 +20,19 @@ void UTowerShopMenu::NativeConstruct()
 
 	check(ButtonTemplate);
 
-	unsigned numberOfItems = m_ItemsToDisplay.Num();
-
 	if (!m_ExitButton->OnClicked.IsBound())
 	{
 		m_ExitButton->OnClicked.AddDynamic(this, &UTowerShopMenu::ExitMenu);
 	}
 
-	if (ButtonTemplate && numberOfItems != 0)
+	if (m_TowerList->GetChildrenCount() == 0)
 	{
-		for (int i = 0; i != numberOfItems; i++)
-		{
-			//Loop through the items inside the Items to Display array
-			//Create a button for each item and set the buttons info
-			UTowerShopButton* tsButton = WidgetTree->ConstructWidget<UTowerShopButton>(ButtonTemplate); //TODO: Should we add an FName?
-			AItemBase* item = Cast<AItemBase>(m_ItemsToDisplay[i]->GetDefaultObject());
-			tsButton->SetObjectToCreate(item);
-			tsButton->SetOwningHud(this);
-
-			//Add the button to the TowerList scroll box object
-			m_TowerList->AddChild(tsButton);
-		}
+		InitializeShopList();
+	}
+	
+	else	
+	{
+		UpdateShopList();
 	}
 
 	ClearDisplayText();
@@ -49,9 +41,7 @@ void UTowerShopMenu::NativeConstruct()
 void UTowerShopMenu::NativeDestruct()
 {
 	Super::NativeDestruct();
-	//Clear childern of the TowerList -> Due to a duplication glitch. This was the easiest fix I could think of
-	m_TowerList->ClearChildren();
-
+	//No need to clear thetower shop list anymore
 	ClearDisplayText();
 }
 
@@ -85,4 +75,36 @@ void UTowerShopMenu::ExitMenu()
 	{
 		m_OwningPC->ExitTowerShopMenu();
 	}
+}
+
+void UTowerShopMenu::InitializeShopList()
+{
+	//Ths creates the first list
+
+	unsigned numberOfItems = m_ItemsToDisplay.Num();
+
+	if (ButtonTemplate && numberOfItems != 0)
+	{
+		for (int i = 0; i != numberOfItems; i++)
+		{
+			//Loop through the items inside the Items to Display array
+			//Create a button for each item and set the buttons info
+			UTowerShopButton* tsButton = WidgetTree->ConstructWidget<UTowerShopButton>(ButtonTemplate); //TODO: Should we add an FName?
+			AItemBase* item = Cast<AItemBase>(m_ItemsToDisplay[i]->GetDefaultObject());
+			tsButton->SetObjectToCreate(item);
+			tsButton->SetOwningHud(this);
+
+			//Add the button to the TowerList scroll box object
+			m_TowerList->AddChild(tsButton);
+		}
+	}
+}
+
+void UTowerShopMenu::UpdateShopList()
+{
+	//This will update every time the shop is open.
+
+	//TODO:: Loop through and Check the cost of the item the button has.
+	//If the player has less money then the button style is disabled
+	//If not it is the regular style
 }

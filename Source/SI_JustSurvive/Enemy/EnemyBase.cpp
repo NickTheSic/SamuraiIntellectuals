@@ -11,20 +11,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
 
-#define debugprint(string, color); bDoesDebugDrawOnScreenMessages ? GEngine->AddOnScreenDebugMessage(-1, 2, color, string) : bDoesDebugDrawOnScreenMessages = 0;
-
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//It won;t send the messages for the Enemy in the build
-#if WITH_EDITOR
-	bDoesDebugDrawOnScreenMessages = true;
-#else
-	bDoesDebugDrawOnScreenMessages = false;
-#endif
 
 	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
 	//SetReplicates(true)
@@ -61,25 +52,21 @@ void AEnemyBase::BeginPlay()
 void AEnemyBase::FindWaypointManager()
 {
 	//We only want to do this if the waypoint manager is null
-	if (m_WaypointManager == nullptr) //Probably a redundant check
+	if (m_WaypointManager == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Finding Waypoint Manager");
-
 		TArray<AActor*> singleWaypointManager;
 
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWaypointManager::StaticClass(), singleWaypointManager);
 
 		check(singleWaypointManager.Num() == 1 && "There was either 0 or 2+ Waypoint managers in this scene");
 
-		AWaypointManager* newManager = Cast<AWaypointManager>(singleWaypointManager[0]); //Should only be one and it should be this type
+		AWaypointManager* newManager = Cast<AWaypointManager>(singleWaypointManager[0]);
 
 		check(newManager && "New manager ended up being null, this probably shouldn't happen");
 
 		if (newManager)
 		{
-			SetWaypointManager(newManager); //The function has a check macro, might be good to have it a function anyway
-			//TODO: Old debug code to remove - 
-			//debugprint("Waypoint Manager Found", FColor::Red);
+			SetWaypointManager(newManager); 
 		}
 
 	}
@@ -93,7 +80,6 @@ void AEnemyBase::GetNewWaypoint()
 	if (m_TargetWaypoint != nullptr)
 	{
 		//Set the old waypoint to Not Taken
-		debugprint("Setting old waypoint to false", FColor::Magenta);
 		m_TargetWaypoint->SetIsWaypointTaken(false);
 	}
 
@@ -106,21 +92,16 @@ void AEnemyBase::GetNewWaypoint()
 		{
 			m_CurrentWaypointGroup = 0;
 			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
-
-			GetNextGroup();
 		}
 		else
 		{
 			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
-
-			//TODO: Nick says - I don't like this but I think it will work for now
-			GetNextGroup();
 		}
 
 		if (m_TargetWaypoint != nullptr)
 		{
 			m_TargetWaypoint->SetIsWaypointTaken(true);
-
+			IncrementCurrentWaypointGroup();
 			UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
 		}
 	}
@@ -128,7 +109,7 @@ void AEnemyBase::GetNewWaypoint()
 	if (m_TargetWaypoint == nullptr)
 	{
 		//If we didn't find a point in the next group we fall back
-		GetPreviousGroup();
+		DecrementCurrentWaypointGroup();
 	}
 
 }
@@ -147,7 +128,6 @@ void AEnemyBase::Tick(float DeltaTime)
 		if (DistanceSize < EnemyData.m_DistanceToPoint)
 		{
 			//TODO: Make this change states instead of getting a new Waypoint
-			debugprint("Within distance! Changing", FColor::Green);
 			GetNewWaypoint();
 		}
 
@@ -159,15 +139,8 @@ void AEnemyBase::Tick(float DeltaTime)
 
 }
 
-void AEnemyBase::GetNextGroup()
+void AEnemyBase::IncrementCurrentWaypointGroup()
 {
-#if WITH_EDITOR
-	FString out;
-	out = GetName();
-	out.Append(TEXT(" is is going to next group"));
-	debugprint(out, FColor::Red);
-#endif
-
 	m_CurrentWaypointGroup++;
 
 	if (m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
@@ -177,16 +150,8 @@ void AEnemyBase::GetNextGroup()
 	}
 }
 
-void AEnemyBase::GetPreviousGroup()
+void AEnemyBase::DecrementCurrentWaypointGroup()
 {
-
-#if WITH_EDITOR
-	FString out;
-	out = GetName();
-	out.Append(TEXT(" is falling back to previous group"));
-	debugprint(out, FColor::Red);
-#endif //Debuging stuff in here
-
 	m_CurrentWaypointGroup--;
 
 	if (m_CurrentWaypointGroup < 0)
