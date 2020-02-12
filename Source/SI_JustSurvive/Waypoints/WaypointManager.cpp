@@ -19,15 +19,12 @@ AWaypointManager::AWaypointManager()
 
 AWaypoint* AWaypointManager::GetRandomWaypoint( int group)
 {
-	//ToDO: MAke sure that this works
 	check(m_WaypointGroups.Num() != 0 && "The waypoints number was empty");
-	check(group >= 0 && group < m_WaypointGroups.Num() && "This group is out of range"); //TODO: Make sure that these check statements are the right way
+	check(group >= 0 && group < m_WaypointGroups.Num() && "This group is out of range");
 	
-	debugprint("Entered the GetRandom Waypoint function");
 
 	if (group >= 0 && group < m_WaypointGroups.Num())
 	{
-		debugprint("Waypoint Manager->Geting random waypoint");
 		return m_WaypointGroups[group]->GetRandomWaypoint();
 	}
 

@@ -8,8 +8,7 @@
 
 /*
 *	Change Log:
-*			
-*			2/10/2020: Nick - Added 2 functions. 1 to GetNewWaypoint and something to find the waypoint manager 
+*			2/12/2020: Nick - Added 2 functions. 1 to GetNewWaypoint and something to find the waypoint manager 
 							- Made this inherit from ACharacter because that has a controller
 							- Added a distance that is editable and debug messages
 							-The AI Follows the path
@@ -56,6 +55,10 @@ public:
 	//To be set when the enemy is spawned
 	void SetWaypointManager(class AWaypointManager* wayMan);
 
+	//TODO: Remove this bool for release, only want it for debugging
+	UPROPERTY(EditAnywhere, Category = "_Debug")
+		bool bDoesDebugDrawOnScreenMessages = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -76,6 +79,9 @@ protected:
 	int m_CurrentWaypointGroup;
 
 	void GetNewWaypoint();
+
+	void GetNextGroup(); //Handles m_CurrentWaypoint group increasing to the next waypoint
+	void GetPreviousGroup(); //Handles m_CurrentWaypoint group getting the previous waypoint
 
 public:	
 	// Called every frame

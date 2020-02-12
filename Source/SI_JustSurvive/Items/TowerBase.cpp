@@ -64,7 +64,7 @@ void ATowerBase::ShootProjectile()
 			{
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
-				SpawnParams.Instigator = Instigator;
+				SpawnParams.Instigator = GetInstigator();
 				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
 				FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();

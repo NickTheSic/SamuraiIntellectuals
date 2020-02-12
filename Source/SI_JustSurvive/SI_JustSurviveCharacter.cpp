@@ -17,6 +17,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Player/SI_PlayerController.h"
+#include "Engine.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -69,8 +70,10 @@ void ASI_JustSurviveCharacter::Tick(float DeltaTime)
 
 	if (HitActor)
 	{
+		//Thought I might have needed to add this. SiceGetActorLabel is Editor only
+#if WITH_EDITOR
 		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Hit - " + HitActor->GetActorLabel());
-
+#endif
 		if (Cast<AWeaponBase>(HitActor))
 		{
 			if (bIsInteracting)

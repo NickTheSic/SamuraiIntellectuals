@@ -30,19 +30,41 @@ void AItemBase::Tick(float DeltaTime)
 bool AItemBase::Purchase(ASI_PlayerController* character)
 {
 	//TODO: This function will check the player's money, and if there is enough to purchase it will reduce the player's total money. 
-	//TODO: Derived classes will call Super for this function to check player's money. 
+	//Derived classes will call Super for this function to check player's money. 
 
-	//TODO: Get the player state and make sure htis wokrs
 	ASI_PlayerState* ps = character->GetPlayerState<ASI_PlayerState>();
 
 	if (ps)
 	{
-		//TODO:
+		//TODO: ItemBase Purchase Function
 		//If has enough money return true and steal money
 		//Else return false
+
+		if (ps->GetCurrentMoney() >= ItemShopData.m_Cost)
+		{
+			//The player has enough money so we purchase the item and return true
+			ps->SubtractCurrentMoney(ItemShopData.m_Cost);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	return false;
+}
+
+void AItemBase::SellItem(ASI_PlayerController* character)
+{
+	//TODO: Note: It seemed easy to add.  It doesn't have to ever be used
+	ASI_PlayerState* ps = character->GetPlayerState<ASI_PlayerState>();
+
+	if (ps)
+	{
+		//Add money eqaul to 75% of the items value
+		ps->AddCurrentMoney(ItemShopData.m_Cost * 0.75);
+	}
 }
 
 FShopData AItemBase::GetShopData()
