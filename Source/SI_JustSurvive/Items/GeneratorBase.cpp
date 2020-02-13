@@ -19,6 +19,7 @@ AGeneratorBase::AGeneratorBase()
 	m_GenMesh = CreateDefaultSubobject<UStaticMeshComponent>("Generator Mesh");
 	m_GenMesh->SetCollisionProfileName("BlockAllDynamic");
 	m_GenMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	m_GenMesh->SetSimulatePhysics(false);
 	m_GenMesh->SetNotifyRigidBodyCollision(true);
 	m_GenMesh->SetupAttachment(RootComponent);
 
@@ -40,8 +41,7 @@ void AGeneratorBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const cla
 	float m_DamageAmount = 0;
 	m_DamageAmount = Damage;
 
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage) + FString(", DamagedBy -- ") + FString(InstigatedBy->GetPawn()->GetName()));
-
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
 	m_HP -= m_DamageAmount;
 
 	//TO DO:: Implement "Game Over Screen" if hp reaches zero

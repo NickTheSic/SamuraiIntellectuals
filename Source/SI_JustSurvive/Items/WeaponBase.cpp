@@ -77,7 +77,12 @@ void AWeaponBase::Shoot()
 
 					//TODO: Change the projectile subclass of template to the actual projectile we plan to use.
 					// spawn the projectile at the muzzle
-					World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+					//CHANGES MADE START
+					ASI_JustSurviveProjectile* projectile = World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+					/*World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);*/
+					projectile->SetOwner(m_Character);
+					//CHANGES MADE END
 
 					m_GunData.m_AmmoInClip--; 
 				}
