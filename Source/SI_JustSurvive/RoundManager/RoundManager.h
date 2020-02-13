@@ -22,6 +22,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Rounds")
 		TArray<TSubclassOf<class ARound>> m_Rounds;
 
+	int m_RoundIndex; 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

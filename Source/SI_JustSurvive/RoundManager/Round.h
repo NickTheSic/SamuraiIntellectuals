@@ -22,6 +22,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Waves")
 		TArray<TSubclassOf<class AWave>> m_Waves;
 
+	int m_WaveIndex; 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

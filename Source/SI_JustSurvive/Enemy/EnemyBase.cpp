@@ -17,6 +17,10 @@ AEnemyBase::AEnemyBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true); 
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
 	//SetReplicates(true)
 	//SetReplicatesMovement(true);
@@ -77,6 +81,8 @@ void AEnemyBase::GetNewWaypoint()
 	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
 	check(m_WaypointManager && "Waypoint manager was null");
 
+	//check(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()));
+
 	if (m_TargetWaypoint != nullptr)
 	{
 		//Set the old waypoint to Not Taken
@@ -119,6 +125,11 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (m_WaypointManager == nullptr)
+	{
+		FindWaypointManager();
+	}
+
 	if (m_TargetWaypoint != nullptr)
 	{
 		FVector DistanceVector = GetActorLocation() - m_TargetWaypoint->GetActorLocation();
@@ -137,6 +148,11 @@ void AEnemyBase::Tick(float DeltaTime)
 		GetNewWaypoint(); //If we don't have a waypoint we want one.  There is a check within GetNewWaypoint
 	}
 
+}
+
+void AEnemyBase::KillEnemy()
+{
+	this->Destroy(); 
 }
 
 void AEnemyBase::IncrementCurrentWaypointGroup()

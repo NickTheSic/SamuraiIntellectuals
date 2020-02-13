@@ -52,13 +52,15 @@ void AEnemyGroup::SpawnEnemy()
 				if (m_SpawnLocation != nullptr)
 				{
 					//TODO: Find a way to use the m_SpawnLocation Location and Rotation
-					const FVector SpawnLocation = FVector(0.0f, 0.0f, 200.0f); 
+					//const FVector SpawnLocation = FVector(0.0f, 0.0f, 200.0f); 
+					//const FVector SpawnLocation = Cast<AActor>(m_SpawnLocation->GetDefaultObject())->GetActorLocation();
+					const FVector SpawnLocation = m_SpawnLocation->GetActorLocation();
 					const FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 					FActorSpawnParameters ActorSpawnParams;
-					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-					World->SpawnActor<AEnemyBase>(m_Enemies[m_NextEnemyIndex], SpawnLocation, SpawnRotation, ActorSpawnParams);
+					AEnemyBase* enemy = Cast<AEnemyBase>(World->SpawnActor<AEnemyBase>(m_Enemies[m_NextEnemyIndex], SpawnLocation, SpawnRotation, ActorSpawnParams));
 
 					m_NextEnemyIndex++;
 				}

@@ -25,7 +25,7 @@ protected:
 	int m_NextEnemyIndex = 0; 
 
 	UPROPERTY(EditAnywhere, Category = "Enemies")
-		TSubclassOf<AActor> m_SpawnLocation; 
+		AActor* m_SpawnLocation = nullptr; 
 
 	FTimerHandle m_EnemySpawnTimer; 
 

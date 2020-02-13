@@ -22,6 +22,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
 		TArray<TSubclassOf<class AEnemyGroup>> m_EnemyGroups;
 
+	int m_EnemyGroupIndex; 
+
+	FTimerHandle EnemySpawnTimer;
+
+	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
+		float m_EnemySpawnRate; 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
