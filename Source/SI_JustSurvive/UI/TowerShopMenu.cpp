@@ -8,8 +8,8 @@
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
 #include "TowerShopButton.h"
-
-#include "../Player/SI_PlayerController.h" //TODO: Change this to the official player controller
+#include "..//Player/SI_PlayerState.h"
+#include "../Player/SI_PlayerController.h"
 
 //A Safe set text macro to make sure the Text object isn't null before we try to set its text
 #define SetObjectText(t, s); if (t) { FText text; t->SetText(text.FromString(s));}
@@ -29,11 +29,8 @@ void UTowerShopMenu::NativeConstruct()
 	{
 		InitializeShopList();
 	}
-	
-	else	
-	{
-		UpdateShopList();
-	}
+
+    UpdateShopList();
 
 	ClearDisplayText();
 }
@@ -107,4 +104,17 @@ void UTowerShopMenu::UpdateShopList()
 	//TODO:: Loop through and Check the cost of the item the button has.
 	//If the player has less money then the button style is disabled
 	//If not it is the regular style
+    if (m_ItemsToDisplay.Num() != 0 && m_TowerList->GetAllChildren().Num() != 0)
+    {
+        TArray<UWidget*> childButtons = m_TowerList->GetAllChildren();
+        ASI_PlayerState* ps = m_OwningPC->GetPlayerState<ASI_PlayerState>();
+        check(ps && "The player state was null");
+        if (ps != nullptr)
+        {
+            for (int i = 0; i != childButtons.Num(); i++)
+            {
+
+            }
+        }
+    }
 }

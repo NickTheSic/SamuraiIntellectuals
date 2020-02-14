@@ -28,24 +28,20 @@ void UTowerShopButton::OnButtonClick()
 
 void UTowerShopButton::GiveSpawnItemToPlayer()
 {
-	check(m_TowerHud->GetOwningPlayer() && "The Owning player was null"); //TODO: Test this is the correct way to check
+	check(m_TowerHud->GetOwningPlayer() && "The Owning player was null");
 
 	//No need to cast it as a ASI_PlayerController since I am not yet using a specific function?
 	if (ASI_PlayerController* pc = Cast<ASI_PlayerController>(m_TowerHud->GetOwningPlayer()))
 	{
-
-		check(pc->GetPawn() && "The pc Pawn was null"); //TODO Check that this is the right way to check
+		check(pc->GetPawn() && "The pc Pawn was null"); 
 		if (AShopCameraPawn* shopPawn = Cast<AShopCameraPawn>(pc->GetPawn()))
 		{
-
-			check(m_SpawnItem && "The spawn item when you clicked wasn't set"); //TODO Check this is the right way
+			check(m_SpawnItem && "The spawn item when you clicked wasn't set"); 
 			if (m_SpawnItem)
 			{
 				shopPawn->SetPlaceableObject(m_SpawnItem);
 			}
-
 		}
-
 	}
 }
 
