@@ -4,6 +4,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Enemy/EnemyBase.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "GameFramework/DamageType.h"
+
 
 ASI_JustSurviveProjectile::ASI_JustSurviveProjectile() 
 {
@@ -45,7 +48,29 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 			Cast<AEnemyBase>(OtherActor)->KillEnemy();
 		}
 
+		//Comment out for now and decide if needed later
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+
+		//CHANGES START
+		EPhysicalSurface SurfaceType = SurfaceType_Default;
+		FBodyInstance* BodyInstance = OtherComp->GetBodyInstance();
+		UPhysicalMaterial* PhysicsMat = BodyInstance->GetSimplePhysicalMaterial();
+
+		SurfaceType = UPhysicalMaterial::DetermineSurfaceType(PhysicsMat);
+
+		float m_DamageAmount = 50.0f;
+
+		AController* MyInstigatorsController = nullptr;
+		APawn* MyInstigator = this->Instigator;		
+
+		if (MyInstigator)
+			MyInstigatorsController = MyInstigator->GetController();
+
+		TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
+		FDamageEvent DamageEvent(ValidDamageTypeClass);
+
+		OtherActor->TakeDamage(m_DamageAmount, DamageEvent, MyInstigatorsController, this);
+		//CHANGES END
 
 		Destroy();
 		
