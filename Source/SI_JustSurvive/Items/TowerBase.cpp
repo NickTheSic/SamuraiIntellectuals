@@ -8,6 +8,7 @@
 #include "Engine/Engine.h"
 #include "SI_JustSurvive/SI_JustSurviveProjectile.h"
 #include "..//Player/SI_PlayerController.h"
+#include "Components/StaticMeshComponent.h"
 
 ATowerBase::ATowerBase()
 {
@@ -29,6 +30,11 @@ void ATowerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	bCanShoot = false;
+
+    if (ItemShopData.m_StaticMesh != nullptr)
+    {
+        TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
+    }
 }
 
 void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, float Volume)
@@ -64,7 +70,7 @@ void ATowerBase::ShootProjectile()
 			{
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
-				SpawnParams.Instigator = Instigator;
+				SpawnParams.Instigator = GetInstigator();
 				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
 				FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();

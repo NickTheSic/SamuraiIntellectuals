@@ -8,6 +8,7 @@
 
 /*
 	Change Log:
+			2/12/2020: Nick - Removed Debug messages, it seems to be working fine
 			2/10/2020: Nick - Added onscreen dbg message
 			2/9/2020: Nick - Initial Creation.  I feel like it would be nice to add a single pointer to all the groups
 */

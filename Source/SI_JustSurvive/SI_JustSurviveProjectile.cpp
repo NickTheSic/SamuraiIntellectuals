@@ -3,6 +3,7 @@
 #include "SI_JustSurviveProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Enemy/EnemyBase.h"
 
 ASI_JustSurviveProjectile::ASI_JustSurviveProjectile() 
 {
@@ -11,6 +12,7 @@ ASI_JustSurviveProjectile::ASI_JustSurviveProjectile()
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &ASI_JustSurviveProjectile::OnHit);		// set up a notification for when this component hits something blocking
+	CollisionComp->SetNotifyRigidBodyCollision(true); 
 
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
@@ -29,6 +31,8 @@ ASI_JustSurviveProjectile::ASI_JustSurviveProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	
 }
 
 void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -36,8 +40,14 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
+		if (Cast<AEnemyBase>(OtherActor))
+		{
+			Cast<AEnemyBase>(OtherActor)->KillEnemy();
+		}
+
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 		Destroy();
+		
 	}
 }

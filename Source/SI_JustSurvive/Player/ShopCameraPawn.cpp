@@ -32,22 +32,20 @@ void AShopCameraPawn::OnClickPlaceObject()
 {
 	if (m_PlaceableTower != nullptr)
 	{
-		/*TODO:
+		//TODO: OnCLickPLaceObject function
 		//if (PlaceableTower->Purchase( Getplayer controller or player state ))
 		//{
 		//Cast a ray to place an instance of the PlaceableTower
 		//
 		//}
-		*/
 	}
 }
 
 bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 {
-	//TODO:
+	//TODO:  CheckCanPlaceMouse function
 	//Cast a ray under the mouse cursor
 	//If the ray hits a collider that we can place on
-	//
 	return false;
 }
 

@@ -8,6 +8,8 @@
 
 /*
 *	Change Log:
+			2/12/2020: Nick - Added some debug stuff. Removed the tick function
+							- Removed some debug stuff to make it cleaner code
 *			2/10/2020: Nick - Added on screen dbg message
 							- Fixed some logical issues
 *			Initial creation - Nick
@@ -30,9 +32,5 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 };

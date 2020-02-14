@@ -67,10 +67,12 @@ void ASI_PlayerController::EnterTowerShopMenu()
 	OnUnPossess();
 	FInputModeGameAndUI UUInput;
 	SetInputMode(UUInput);
-	if (MyTowerHud)
+
+	if (MyTowerHud && !MyTowerHud->IsInViewport())
 	{
 		MyTowerHud->AddToViewport();
 	}
+
 	bShowMouseCursor = true;
 	TArray<AActor*> CameraPawnArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
@@ -111,7 +113,7 @@ void ASI_PlayerController::ExitTowerShopMenu()
 	FInputModeGameOnly GameInput;
 	SetInputMode(GameInput);
 
-	if (MyTowerHud)
+	if (MyTowerHud && MyTowerHud->IsInViewport())
 	{
 		MyTowerHud->RemoveFromViewport();
 	}

@@ -8,6 +8,8 @@
 
 /*
 	Change Log:
+			2/11/2020: Nick - I added to the purchase funtion - It should now check the players money vs item cost. Needs to be tested
+							- I added a sell function based of the purchase funtion logic
 			2/10/2020: Nick - I changed purchase to take a player controller
 */
 
@@ -48,7 +50,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool Purchase(class ASI_PlayerController* character); //TODO: Change this to Player Controller
+	virtual bool Purchase(class ASI_PlayerController* character);
+
+	virtual void SellItem(class ASI_PlayerController* character);
 
 	FShopData GetShopData();
 

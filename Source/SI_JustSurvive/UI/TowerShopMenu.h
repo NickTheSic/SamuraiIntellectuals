@@ -10,8 +10,9 @@
 #include "TowerShopMenu.generated.h"
 
 /**
- * Change log:			TODO:  Check over TODOs that can be fixed after a merge
- *
+ * Change log:			
+ *			2/12/2020: Nick - Changed up how the shop gets made.  Created helper functions to help me too		
+	
 			2/9/2020: Nick - Added an Exit menu button and added the dynamic delegate to call the exit menu
 
  *			2/8/2020:	Found out that there are functions in here that I am making (SetPlayerController)
@@ -41,6 +42,9 @@ public:
 
 protected:
 	class ASI_PlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
+
+	void InitializeShopList();
+	void UpdateShopList();
 
 	//The purchaseable towers
 	UPROPERTY(EditAnywhere, Category = "Config")

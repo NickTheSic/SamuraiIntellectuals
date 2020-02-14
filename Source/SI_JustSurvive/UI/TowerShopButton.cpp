@@ -28,24 +28,20 @@ void UTowerShopButton::OnButtonClick()
 
 void UTowerShopButton::GiveSpawnItemToPlayer()
 {
-	check(m_TowerHud->GetOwningPlayer() && "The Owning player was null"); //TODO: Test this is the correct way to check
+	check(m_TowerHud->GetOwningPlayer() && "The Owning player was null");
 
 	//No need to cast it as a ASI_PlayerController since I am not yet using a specific function?
 	if (ASI_PlayerController* pc = Cast<ASI_PlayerController>(m_TowerHud->GetOwningPlayer()))
 	{
-
-		check(pc->GetPawn() && "The pc Pawn was null"); //TODO Check that this is the right way to check
+		check(pc->GetPawn() && "The pc Pawn was null"); 
 		if (AShopCameraPawn* shopPawn = Cast<AShopCameraPawn>(pc->GetPawn()))
 		{
-
-			check(m_SpawnItem && "The spawn item when you clicked wasn't set"); //TODO Check this is the right way
+			check(m_SpawnItem && "The spawn item when you clicked wasn't set"); 
 			if (m_SpawnItem)
 			{
 				shopPawn->SetPlaceableObject(m_SpawnItem);
 			}
-
 		}
-
 	}
 }
 
@@ -65,11 +61,15 @@ void UTowerShopButton::SetupWidgetStyle()
 	FShopData displayDat = m_SpawnItem->GetShopData();
 
 	UTexture* t = displayDat.m_Texture;
-	//
+
+	//TODO(Nick):  Fix the texture display on the buttons
+
+	//Make sure we have a texture before we try to set it
 	if (t != nullptr)
 	{
-		FVector2D imageSize(t->GetSurfaceWidth(), t->GetSurfaceHeight()); //TODO Get actual size
-		//Keep a consistent widget style between the main 3 buttons
+		FVector2D imageSize(t->GetSurfaceWidth(), t->GetSurfaceHeight()); //TODO(Nick) Get actual size
+		imageSize /= 10; //I am hopefully shrinking the size of the texture by a reasonable amount TODO:  
+
 		//Normal is for how the button looks
 		WidgetStyle.Normal.SetResourceObject(t);
 		WidgetStyle.Normal.SetImageSize(imageSize);
@@ -82,8 +82,7 @@ void UTowerShopButton::SetupWidgetStyle()
 		WidgetStyle.Pressed.SetResourceObject(t);
 		WidgetStyle.Pressed.SetImageSize(imageSize);
 
-		//TODO: Maybe add a Disabled widget style?  
-		//TODO: Will require a check to the Cost of the players money while entering the shop
+		//TODO(Nick): Maybe add a Disabled widget style?
 	}
 }
 

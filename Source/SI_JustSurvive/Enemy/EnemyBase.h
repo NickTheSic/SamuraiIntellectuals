@@ -8,11 +8,12 @@
 
 /*
 *	Change Log:
-*			
-*			2/10/2020: Nick - Added 2 functions. 1 to GetNewWaypoint and something to find the waypoint manager 
+*			2/12/2020: Nick - Added 2 functions. 1 to GetNewWaypoint and something to find the waypoint manager 
 							- Made this inherit from ACharacter because that has a controller
 							- Added a distance that is editable and debug messages
 							-The AI Follows the path
+							-Removed the debug messages from the movement
+
 *			2/9/2020: Nick - I added a Waypoint manager
 *			2/8/2020: Nick - Initial Creation.  I am not sure how to do behaviour trees
 */
@@ -77,7 +78,12 @@ protected:
 
 	void GetNewWaypoint();
 
+	void IncrementCurrentWaypointGroup(); 
+	void DecrementCurrentWaypointGroup(); 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void KillEnemy();
 };

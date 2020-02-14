@@ -11,15 +11,19 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
 
-#define debugprint(string); GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, string)
-
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true); 
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
+	//SetReplicates(true)
+	//SetReplicatesMovement(true);
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
@@ -52,24 +56,21 @@ void AEnemyBase::BeginPlay()
 void AEnemyBase::FindWaypointManager()
 {
 	//We only want to do this if the waypoint manager is null
-	if (m_WaypointManager == nullptr) //Probably a redundant check
+	if (m_WaypointManager == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Finding Waypoint Manager");
-
 		TArray<AActor*> singleWaypointManager;
 
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWaypointManager::StaticClass(), singleWaypointManager);
 
 		check(singleWaypointManager.Num() == 1 && "There was either 0 or 2+ Waypoint managers in this scene");
 
-		AWaypointManager* newManager = Cast<AWaypointManager>(singleWaypointManager[0]); //Should only be one and it should be this type
+		AWaypointManager* newManager = Cast<AWaypointManager>(singleWaypointManager[0]);
 
 		check(newManager && "New manager ended up being null, this probably shouldn't happen");
 
 		if (newManager)
 		{
-			m_WaypointManager = newManager;
-			debugprint("Waypoint Manager Found");
+			SetWaypointManager(newManager); 
 		}
 
 	}
@@ -77,32 +78,45 @@ void AEnemyBase::FindWaypointManager()
 
 void AEnemyBase::GetNewWaypoint()
 {
-
+	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
 	check(m_WaypointManager && "Waypoint manager was null");
 
+	//check(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()));
+
+	if (m_TargetWaypoint != nullptr)
+	{
+		//Set the old waypoint to Not Taken
+		m_TargetWaypoint->SetIsWaypointTaken(false);
+	}
+
+	//TODO(Anyone): This will work for looping through.  But when we get to the generator it will need to be refactored
 	if (m_WaypointManager)
 	{
 		check(m_WaypointManager->GetWaypointGroupSize() != 0);
 
-		debugprint("Finding Waypoint");
-
 		if (m_TargetWaypoint == nullptr || m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
 		{
-			debugprint("Targetpoint was null, waypoint group size was in range or somethin");
 			m_CurrentWaypointGroup = 0;
 			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
 		}
 		else
 		{
-			debugprint("Looping through other waypoints");
 			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
 		}
 
-		UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
+		if (m_TargetWaypoint != nullptr)
+		{
+			m_TargetWaypoint->SetIsWaypointTaken(true);
+			IncrementCurrentWaypointGroup();
+			UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
+		}
 	}
 
-	//TODO: Nick says - I don't like this but I think it will work for now
-	m_CurrentWaypointGroup++;
+	if (m_TargetWaypoint == nullptr)
+	{
+		//If we didn't find a point in the next group we fall back
+		DecrementCurrentWaypointGroup();
+	}
 
 }
 
@@ -110,6 +124,11 @@ void AEnemyBase::GetNewWaypoint()
 void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (m_WaypointManager == nullptr)
+	{
+		FindWaypointManager();
+	}
 
 	if (m_TargetWaypoint != nullptr)
 	{
@@ -120,7 +139,6 @@ void AEnemyBase::Tick(float DeltaTime)
 		if (DistanceSize < EnemyData.m_DistanceToPoint)
 		{
 			//TODO: Make this change states instead of getting a new Waypoint
-			debugprint("Within distance! Changing");
 			GetNewWaypoint();
 		}
 
@@ -132,3 +150,29 @@ void AEnemyBase::Tick(float DeltaTime)
 
 }
 
+void AEnemyBase::KillEnemy()
+{
+	this->Destroy(); 
+}
+
+void AEnemyBase::IncrementCurrentWaypointGroup()
+{
+	m_CurrentWaypointGroup++;
+
+	if (m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
+	{
+		//Reset the group int to 0
+		m_CurrentWaypointGroup = 0;
+	}
+}
+
+void AEnemyBase::DecrementCurrentWaypointGroup()
+{
+	m_CurrentWaypointGroup--;
+
+	if (m_CurrentWaypointGroup < 0)
+	{
+		//Reset the group int to Max-1
+		m_CurrentWaypointGroup = m_WaypointManager->GetWaypointGroupSize() - 1;
+	}
+}

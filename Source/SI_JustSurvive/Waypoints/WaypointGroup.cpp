@@ -17,16 +17,12 @@ AWaypointGroup::AWaypointGroup()
 
 AWaypoint* AWaypointGroup::GetRandomWaypoint()
 {
-	check(m_Waypoints.Num() != 0 && "No Waypoints were set"); //TODO: Verify which way the check statement works. Might have it backwards
+	check(m_Waypoints.Num() != 0 && "No Waypoints were set");
 
 	AWaypoint* testWaypoint = nullptr; //I only want to test it a few times for a new random waypoint
 	unsigned int tries = 0;
 
-	//TODO: Probably clean up my debug stuff - Nick
-
-	debugprint("Entered the Get Random waypoint function");
-
-	//TODO: Possibly rewrite this function.  This also looks messy
+	//TODO(Nick): Possibly rewrite this part.  This also looks messy
 	while (testWaypoint == nullptr && tries < 3)
 	{
 		int randomPoint = FMath::RandRange(0, m_Waypoints.Num() - 1);
@@ -35,14 +31,9 @@ AWaypoint* AWaypointGroup::GetRandomWaypoint()
 
 		if (m_Waypoints[randomPoint] != nullptr && m_Waypoints[randomPoint]->GetIsWaypointTaken() == false) //If the waypoint isn't taken or a nullptr we can use it
 		{
-			FString str = TEXT("Testing finding a waypoint in waypoint: ");
-			str.AppendInt(randomPoint);
-			debugprint(str);
 			testWaypoint = m_Waypoints[randomPoint];
 			break; //Break out of the while loop and go to return the testWaypoint
 		}
-
-		debugprint ("Finding waypoint looped");
 		tries++;
 	}
 
@@ -55,11 +46,3 @@ void AWaypointGroup::BeginPlay()
 	Super::BeginPlay();
 	//TODO: Look into adding waypoints dynamically through Heirarchy or adding children
 }
-
-// Called every frame
-void AWaypointGroup::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
