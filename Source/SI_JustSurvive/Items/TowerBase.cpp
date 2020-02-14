@@ -33,7 +33,7 @@ void ATowerBase::BeginPlay()
 
     if (ItemShopData.m_StaticMesh != nullptr)
     {
-        TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
+        m_TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
     }
 }
 
