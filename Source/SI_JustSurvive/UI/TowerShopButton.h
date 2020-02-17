@@ -8,6 +8,8 @@
 
 /**
  * Change Log:
+			2/17/2020: Nick - Changed some things around wih the addition of the player state
+
 *			2/12/2020: Nick - I made minor changes to the comments and format
 
  *			2/9/2020: Nick - I added a null texture check when setting the button texture among other things to the widget style

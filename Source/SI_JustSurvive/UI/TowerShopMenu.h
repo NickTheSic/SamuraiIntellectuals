@@ -11,6 +11,8 @@
 
 /**
  * Change log:			
+			2/17/2020: Nick - Changed somethings around with the addition of Player State
+
  *			2/12/2020: Nick - Changed up how the shop gets made.  Created helper functions to help me too		
 	
 			2/9/2020: Nick - Added an Exit menu button and added the dynamic delegate to call the exit menu

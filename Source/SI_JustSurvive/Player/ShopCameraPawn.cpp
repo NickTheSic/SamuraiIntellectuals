@@ -54,10 +54,10 @@ void AShopCameraPawn::OnClickPlaceObject()
 
 		if (!didPurchase)
 		{
-
+			return;
 		}
 
-		if (world && pc)
+		if (world && pc && didPurchase)
 		{
 			TSubclassOf<ATowerBase> tower = Cast<ATowerBase>(m_PlaceableTower)->GetClass();
 

@@ -32,6 +32,13 @@ void UTowerShopMenu::NativeConstruct()
 
     UpdateShopList();
 
+	ASI_PlayerState* ps = m_OwningPC->GetPlayerState<ASI_PlayerState>();
+
+	if (ps)
+	{
+		SetObjectText(m_PlayerMoney, FString::FromInt(ps->GetCurrentMoney()));
+	}
+
 	ClearDisplayText();
 }
 
@@ -58,13 +65,19 @@ void UTowerShopMenu::SetDisplayText(FShopData& data)
 	//Set the text of our text objects. Will change as needed
 	SetObjectText(m_NameText, data.m_ItemName.ToString());
 	SetObjectText(m_CostText, FString::FromInt(data.m_Cost));
+	ASI_PlayerState* ps = m_OwningPC->GetPlayerState<ASI_PlayerState>();
+
+	if (ps)
+	{
+		SetObjectText(m_PlayerMoney, FString::FromInt(ps->GetCurrentMoney()));
+	}
 }
 
 void UTowerShopMenu::ClearDisplayText()
 {
 	SetObjectText(m_NameText, "");
 	SetObjectText(m_CostText, "");
-	SetObjectText(m_PlayerMoney, "");
+	//SetObjectText(m_PlayerMoney, "");
 }
 
 void UTowerShopMenu::ExitMenu()
