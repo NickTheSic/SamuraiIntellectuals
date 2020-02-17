@@ -44,7 +44,7 @@ void AGeneratorBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const cla
 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
 	m_HP -= m_DamageAmount;
 
-	//TO DO:: Implement "Game Over Screen" if hp reaches zero
+	//TODO:: Implement "Game Over Screen" if hp reaches zero
 	if (m_HP <= 0)
 	{
 		Destroy();

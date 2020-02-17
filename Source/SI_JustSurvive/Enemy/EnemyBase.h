@@ -67,6 +67,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Enemy Config")
 		FEnemyData EnemyData;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
+		class UPawnNoiseEmitterComponent* m_NoiseEmitterComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float m_EnemyHP = 150.0f;
+
+
 	void FindWaypointManager(); //If waypoint manager is null than we need to find it
 
 	class AWaypointManager* m_WaypointManager = nullptr;
@@ -81,6 +88,7 @@ protected:
 	void IncrementCurrentWaypointGroup(); 
 	void DecrementCurrentWaypointGroup(); 
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -88,6 +96,8 @@ public:
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+		void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	void KillEnemy();
 };

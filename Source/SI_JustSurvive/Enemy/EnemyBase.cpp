@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -35,7 +36,13 @@ AEnemyBase::AEnemyBase()
 
 	Tags.Add("Enemy"); 
 
+	//TODO: Have enemies take damage
+	SetCanBeDamaged(true);
+	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
+
 	//TODO: @Vanessa Add a noise emitter to enemy and make it so the tower is instigated by by the enemy's noise emitter. Sense the player and generator with Pawn Sensing.  
+	m_NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
+
 	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
 }
 
@@ -63,7 +70,6 @@ void AEnemyBase::BeginPlay()
 	{
 		GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
 	}
-
 }
 
 void AEnemyBase::FindWaypointManager()
@@ -85,12 +91,14 @@ void AEnemyBase::FindWaypointManager()
 		{
 			SetWaypointManager(newManager); 
 		}
-
 	}
 }
 
 void AEnemyBase::GetNewWaypoint()
 {
+	//Needed for noise emitter
+	MakeNoise(1.0f, this, GetActorLocation());
+
 	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
 	check(m_WaypointManager && "Waypoint manager was null");
 
@@ -145,6 +153,7 @@ void AEnemyBase::Tick(float DeltaTime)
 
 	if (m_TargetWaypoint != nullptr)
 	{
+
 		FVector DistanceVector = GetActorLocation() - m_TargetWaypoint->GetActorLocation();
 
 		float DistanceSize = DistanceVector.Size();
@@ -154,7 +163,6 @@ void AEnemyBase::Tick(float DeltaTime)
 			//TODO: Make this change states instead of getting a new Waypoint
 			GetNewWaypoint();
 		}
-
 	}
 	else
 	{
@@ -166,6 +174,20 @@ void AEnemyBase::Tick(float DeltaTime)
 void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//if (Cast<ASI_>)
+}
+
+void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	float m_DamageAmount = 0;
+	m_DamageAmount = Damage;
+
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
+	m_EnemyHP -= m_DamageAmount;
+
+	if (m_EnemyHP <= 0)
+	{
+		KillEnemy();
+	}
 }
 
 void AEnemyBase::KillEnemy()

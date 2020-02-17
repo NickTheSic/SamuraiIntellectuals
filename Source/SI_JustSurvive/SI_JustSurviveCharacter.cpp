@@ -105,7 +105,6 @@ void ASI_JustSurviveCharacter::Tick(float DeltaTime)
 				}
 			}
 		}
-
 	}
 	else
 	{

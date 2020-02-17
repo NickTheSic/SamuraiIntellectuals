@@ -4,6 +4,7 @@
 #include "TowerBase.h"
 #include "Perception/PawnSensingComponent.h"
 #include "SI_JustSurvive/SI_JustSurviveCharacter.h"
+#include "SI_JustSurvive/Enemy/EnemyBase.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "SI_JustSurvive/SI_JustSurviveProjectile.h"
