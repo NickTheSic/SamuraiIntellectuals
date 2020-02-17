@@ -14,6 +14,12 @@
 *			2/8/2020: Nick - Initial Creation.  Need to clean up the todos at a later time
 */
 
+//TODO: Setup menu interaction with a controller
+/*
+	Save Mouse Position in HUD
+	Update the position based on mouse position or on input
+*/
+
 UCLASS()
 class SI_JUSTSURVIVE_API AShopCameraPawn : public APawn
 {
