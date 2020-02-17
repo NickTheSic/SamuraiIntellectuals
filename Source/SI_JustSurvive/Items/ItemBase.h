@@ -8,6 +8,9 @@
 
 /*
 	Change Log:
+			2/17/2020: Nick - I added a setter for the shop information
+							- I changed bIsInShop to be true
+
 			2/11/2020: Nick - I added to the purchase funtion - It should now check the players money vs item cost. Needs to be tested
 							- I added a sell function based of the purchase funtion logic
 			2/10/2020: Nick - I changed purchase to take a player controller
@@ -30,7 +33,7 @@ struct SI_JUSTSURVIVE_API FShopData
 	UPROPERTY(EditAnywhere, Category = "ShopData")
 		class UTexture* m_Texture; 
 
-	bool bIsInShop; 
+	bool bIsInShop = true; //Items start in the shop
 };
 
 UCLASS()
@@ -55,6 +58,9 @@ public:
 	virtual void SellItem(class ASI_PlayerController* character);
 
 	FShopData GetShopData();
+	void SetShopData(FShopData newData);
+
+	void SetIsInShop(bool isInShop);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")

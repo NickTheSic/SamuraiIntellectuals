@@ -3,7 +3,7 @@
 
 #include "TowerShopButton.h"
 
-#include "..//Items/ItemBase.h"
+#include "..//Items/TowerBase.h"
 #include "../Player/SI_PlayerController.h"
 #include "../Player/ShopCameraPawn.h"
 #include "Engine/Texture.h"
@@ -18,7 +18,7 @@ UTowerShopButton::UTowerShopButton()
 void UTowerShopButton::OnButtonClick()
 {
 	//Make sure that we have an item and a hud to display to
-	check(m_SpawnItem && m_TowerHud && "On click error"); //TODO: Make sure this check is the right way
+	check(m_SpawnItem && m_TowerHud && "On click error"); 
 	if (m_SpawnItem && m_TowerHud)
 	{
 		SetDisplayData();
@@ -49,9 +49,11 @@ void UTowerShopButton::SetObjectToCreate(class AItemBase* newItem)
 {
 	check(newItem && "New item error"); 
 
-	if (newItem)
+	ATowerBase* nTower = Cast<ATowerBase>(newItem);
+
+	if (nTower)
 	{
-		m_SpawnItem = newItem;
+		m_SpawnItem = nTower;
 		SetupWidgetStyle();
 	}
 }
@@ -106,4 +108,13 @@ void UTowerShopButton::SetOwningHud(UTowerShopMenu* menu)
 	{
 		m_TowerHud = menu;
 	}
+}
+
+int UTowerShopButton::GetTowerCost()
+{
+	if (m_SpawnItem != nullptr)
+	{
+		return m_SpawnItem->GetShopData().m_Cost;
+	}
+	return 0;
 }

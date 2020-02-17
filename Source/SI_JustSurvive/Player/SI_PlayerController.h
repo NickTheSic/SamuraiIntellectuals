@@ -40,6 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 		void ExitTowerShopMenu();
 
+	class UTowerShopMenu* GetTowerShopMenu() { return MyTowerHud; };
+
 
 	//Functions to call on the pawn
 	void Jump();
@@ -51,7 +53,7 @@ public:
 	void MoveForward(float val);
 	void MoveRight(float val);
 
-	void OnMouseClick(); //Will call fire on PlayerCharacter, but will do something else in the shop menu
+	void OnMouseClick();
 	void OnClickReleased(); 
 	void Reload(); 
 	void ChangeWeapon(float val);
