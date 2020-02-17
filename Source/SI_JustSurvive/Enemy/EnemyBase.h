@@ -67,6 +67,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Enemy Config")
 		FEnemyData EnemyData;
 
+	UPROPERTY(EditAnywhere, Category = "Enemy Config")
+		class ARoundManager* m_RoundManager; 
+
+	
+
 	void FindWaypointManager(); //If waypoint manager is null than we need to find it
 
 	class AWaypointManager* m_WaypointManager = nullptr;

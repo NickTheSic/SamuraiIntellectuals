@@ -4,6 +4,8 @@
 #include "EnemyGroup.h"
 #include <TimerManager.h>
 #include "../Enemy/EnemyBase.h"
+#include "Engine/World.h"
+#include "SpawnPoint.h"
 
 // Sets default values
 AEnemyGroup::AEnemyGroup()
@@ -18,7 +20,7 @@ void AEnemyGroup::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnAllEnemies(); 
+	//SpawnAllEnemies(); 
 	
 }
 
@@ -31,12 +33,12 @@ void AEnemyGroup::Tick(float DeltaTime)
 
 void AEnemyGroup::SpawnAllEnemies()
 {
-	GetWorld()->GetTimerManager().SetTimer(m_EnemySpawnTimer, this, &AEnemyGroup::SpawnEnemy, m_SpawnFrequency, true); 
+	m_World->GetTimerManager().SetTimer(m_EnemySpawnTimer, this, &AEnemyGroup::SpawnEnemy, m_SpawnFrequency, true); 
 }
 
 void AEnemyGroup::ClearSpawnEnemyTimer()
 {
-	GetWorld()->GetTimerManager().ClearTimer(m_EnemySpawnTimer); 
+	m_World->GetTimerManager().ClearTimer(m_EnemySpawnTimer); 
 }
 
 void AEnemyGroup::SpawnEnemy()
@@ -45,9 +47,9 @@ void AEnemyGroup::SpawnEnemy()
 	{
 		if (m_Enemies[m_NextEnemyIndex] != nullptr)
 		{
-			UWorld* const World = GetWorld();
+			//UWorld* const World = GetWorld();
 
-			if (World != nullptr)
+			if (m_World != nullptr)
 			{
 				if (m_SpawnLocation != nullptr)
 				{
@@ -60,7 +62,7 @@ void AEnemyGroup::SpawnEnemy()
 					FActorSpawnParameters ActorSpawnParams;
 					ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-					AEnemyBase* enemy = Cast<AEnemyBase>(World->SpawnActor<AEnemyBase>(m_Enemies[m_NextEnemyIndex], SpawnLocation, SpawnRotation, ActorSpawnParams));
+					AEnemyBase* enemy = Cast<AEnemyBase>(m_World->SpawnActor<AEnemyBase>(m_Enemies[m_NextEnemyIndex], SpawnLocation, SpawnRotation, ActorSpawnParams));
 
 					m_NextEnemyIndex++;
 				}
@@ -72,5 +74,29 @@ void AEnemyGroup::SpawnEnemy()
 	{
 		ClearSpawnEnemyTimer(); 
 	}
+}
+
+int AEnemyGroup::GetNumEnemies()
+{
+	return m_Enemies.Num();
+}
+
+float AEnemyGroup::GetAllEnemiesDeployedTimer()
+{
+	check(m_Enemies.Num() != 0); 
+
+	m_ApproxAllEnemiesDeployedTimer = m_SpawnFrequency * m_Enemies.Num(); 
+
+	return m_ApproxAllEnemiesDeployedTimer;
+}
+
+void AEnemyGroup::SetWorld(UWorld* world)
+{
+	m_World = world; 
+}
+
+void AEnemyGroup::SetSpawnLocation(ASpawnPoint* spawnPoint)
+{
+	m_SpawnLocation = spawnPoint; 
 }
 

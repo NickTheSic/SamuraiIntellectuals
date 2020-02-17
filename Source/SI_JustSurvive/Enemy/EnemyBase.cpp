@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "../RoundManager/RoundManager.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -53,6 +54,13 @@ void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<AActor*> roundManagers; 
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoundManager::StaticClass(), roundManagers);
+
+	m_RoundManager = Cast<ARoundManager>(roundManagers[0]); 
+
+	//TODO: check that there is no more than one Round Manager. 
 
 	if (m_WaypointManager == nullptr)
 	{
@@ -175,6 +183,8 @@ void AEnemyBase::KillEnemy()
 		//When the enemy dies we want him to give up his waypoint
 		m_TargetWaypoint->SetIsWaypointTaken(false);
 	}
+
+	m_RoundManager->RemoveEnemy();
 
 	this->Destroy(); 
 }

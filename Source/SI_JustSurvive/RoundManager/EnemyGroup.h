@@ -24,13 +24,17 @@ protected:
 
 	int m_NextEnemyIndex = 0; 
 
-	UPROPERTY(EditAnywhere, Category = "Enemies")
-		AActor* m_SpawnLocation = nullptr; 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enemies")
+		class ASpawnPoint* m_SpawnLocation;
 
 	FTimerHandle m_EnemySpawnTimer; 
 
 	UPROPERTY(EditAnywhere, Category = "Enemies")
-	float m_SpawnFrequency; 
+	float m_SpawnFrequency;
+
+	float m_ApproxAllEnemiesDeployedTimer; 
+
+	UWorld* m_World; 
 
 public:	
 	// Called every frame
@@ -40,5 +44,13 @@ public:
 
 	void ClearSpawnEnemyTimer();
 
-	void SpawnEnemy(); 
+	void SpawnEnemy();
+
+	int GetNumEnemies(); 
+
+	float GetAllEnemiesDeployedTimer(); 
+
+	void SetWorld(UWorld* world); 
+
+	void SetSpawnLocation(ASpawnPoint* spawnPoint); 
 };
