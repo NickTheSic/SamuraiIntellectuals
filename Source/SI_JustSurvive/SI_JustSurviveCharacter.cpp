@@ -105,7 +105,6 @@ void ASI_JustSurviveCharacter::Tick(float DeltaTime)
 				}
 			}
 		}
-
 	}
 	else
 	{
@@ -144,7 +143,7 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
 void ASI_JustSurviveCharacter::OnFire()
 {
-	MakeNoise(1.0f, this, GetActorLocation());
+	//MakeNoise(1.0f, this, GetActorLocation());
 
 	// try and fire a projectile
 	if (ProjectileClass != NULL)

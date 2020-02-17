@@ -4,6 +4,7 @@
 #include "TowerBase.h"
 #include "Perception/PawnSensingComponent.h"
 #include "SI_JustSurvive/SI_JustSurviveCharacter.h"
+#include "SI_JustSurvive/Enemy/EnemyBase.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "SI_JustSurvive/SI_JustSurviveProjectile.h"
@@ -17,6 +18,7 @@ ATowerBase::ATowerBase()
 
 	m_PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	m_PawnSensingComp->OnHearNoise.AddDynamic(this, &ATowerBase::OnNoiseHeard);
+	m_PawnSensingComp->bOnlySensePlayers = false;
 
 	m_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	m_MuzzleLocation->SetupAttachment(m_TowerMesh);
@@ -40,6 +42,11 @@ void ATowerBase::BeginPlay()
 void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, float Volume)
 {
 	//GetWorldTimerManager().SetTimer(SpawnProjectileTimer, this, &ATowerBase::ShootProjectile, m_TowerData.m_FireRate, true);
+
+	if (Cast<ASI_JustSurviveCharacter>(NoiseInstigator))
+	{
+		return;
+	}
 
 	FString message = TEXT("Saw Actor") + NoiseInstigator->GetName();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);

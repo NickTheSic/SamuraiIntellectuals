@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Engine/Engine.h"
+#include "SI_JustSurvive/Player/SI_PlayerController.h"
 
 
 // Sets default values
@@ -41,13 +42,15 @@ void AGeneratorBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const cla
 	float m_DamageAmount = 0;
 	m_DamageAmount = Damage;
 
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
 	m_HP -= m_DamageAmount;
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Generator under attack! " + FString::FromInt(Damage) + " damage taken, " + FString::FromInt(m_HP) + "HP left");
 
-	//TO DO:: Implement "Game Over Screen" if hp reaches zero
+	//TODO:: Implement "Game Over Screen" if hp reaches zero
 	if (m_HP <= 0)
 	{
 		Destroy();
+		ASI_PlayerController* pController = Cast <ASI_PlayerController>(GetWorld()->GetFirstPlayerController());
+		pController->InitiateGameOver();
 	}
 
 }
