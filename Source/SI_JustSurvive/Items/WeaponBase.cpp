@@ -94,7 +94,7 @@ void AWeaponBase::Shoot()
 void AWeaponBase::PullTrigger()
 {
 	FTimerManager& Timer = GetWorldTimerManager();
-	Timer.SetTimer(m_FireRateTimer, this, &AWeaponBase::Shoot, m_GunData.m_FireRate, true);
+	Timer.SetTimer(m_FireRateTimer, this, &AWeaponBase::Shoot, m_GunData.m_FireRate, true, 0.2);
 }
 
 void AWeaponBase::ReleaseTrigger()
