@@ -63,7 +63,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 	//Stop interacting with the character - due to how it is currently setup
 	MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
 
-	check (MyTowerHud && "THe hud was a nullptr")
+	check (MyTowerHud && "The hud was a nullptr")
 
 	OnUnPossess();
 	FInputModeGameAndUI UUInput;
@@ -74,7 +74,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		MyTowerHud->AddToViewport();
 	}
 
-	bShowMouseCursor = true;
+	//bShowMouseCursor = true;
 	TArray<AActor*> CameraPawnArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
 
