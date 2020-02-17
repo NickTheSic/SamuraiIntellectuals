@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShopCameraPawn.h"
+#include "Blueprint/UserWidget.h"
 
 void ASI_PlayerController::OnPossess(APawn* aPawn)
 {
@@ -123,6 +124,22 @@ void ASI_PlayerController::ExitTowerShopMenu()
 	MyOwningCharacter->StopInteraction(); //TODO: I think this could be cleaner - Nick
 
 	OnPossess(MyOwningCharacter);
+}
+
+void ASI_PlayerController::InitiateGameOver()
+{
+	FInputModeUIOnly UIMode;
+	SetInputMode(UIMode);
+	if (w_GameOverMenu)
+	{
+		GameOverMenu = CreateWidget<UUserWidget>(this, w_GameOverMenu);
+
+		if (GameOverMenu)
+		{
+			GameOverMenu->AddToViewport();
+		}
+		bShowMouseCursor = true;
+	}
 }
 
 void ASI_PlayerController::Jump()

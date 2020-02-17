@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageMesh")
 		class UStaticMeshComponent* m_GenMesh;
 
-	int m_HP = 100;
+	int m_HP = 150;
 
 public:	
 	// Called every frame

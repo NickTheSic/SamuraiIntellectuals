@@ -43,16 +43,17 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
 	{
+		//TODO: @Vanessa Once AI spawning projectiles complete, add if statements to check which character is firing for damage purposes
 		if (Cast<AEnemyBase>(OtherActor))
 		{
 			//TODO: @Vanessa Change this to Take Damage based on projectile's damage. When enemy health is 0 Call KillEnemy() on the enemy. 
-			Cast<AEnemyBase>(OtherActor)->KillEnemy();
+			//Cast<AEnemyBase>(OtherActor)->TakeAnyDamage(AEnemyBase, );
+			//Cast<AEnemyBase>(OtherActor)->KillEnemy();
 		}
 
 		//Comment out for now and decide if needed later
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		//CHANGES START
 		EPhysicalSurface SurfaceType = SurfaceType_Default;
 		FBodyInstance* BodyInstance = OtherComp->GetBodyInstance();
 		UPhysicalMaterial* PhysicsMat = BodyInstance->GetSimplePhysicalMaterial();
@@ -69,9 +70,7 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 		FDamageEvent DamageEvent(ValidDamageTypeClass);
 
 		OtherActor->TakeDamage(m_DamageAmount, DamageEvent, MyInstigatorsController, this);
-		//CHANGES END
-
-		Destroy();
 		
+		Destroy();		
 	}
 }

@@ -57,6 +57,9 @@ public:
 	//To be set when the enemy is spawned
 	void SetWaypointManager(class AWaypointManager* wayMan);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
+		class UPawnNoiseEmitterComponent* NoiseEmitterComponent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -66,13 +69,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Enemy Config")
 		FEnemyData EnemyData;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
-		class UPawnNoiseEmitterComponent* m_NoiseEmitterComponent;
-
+	
 	UPROPERTY(EditAnywhere, Category = "Health")
 		float m_EnemyHP = 150.0f;
-
 
 	void FindWaypointManager(); //If waypoint manager is null than we need to find it
 

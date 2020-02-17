@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "SI_JustSurvive/Items/TowerBase.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -41,8 +42,8 @@ AEnemyBase::AEnemyBase()
 	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
 
 	//TODO: @Vanessa Add a noise emitter to enemy and make it so the tower is instigated by by the enemy's noise emitter. Sense the player and generator with Pawn Sensing.  
-	m_NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
-
+	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
+	//SetMakeNoiseDelegate();
 	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
 }
 
@@ -60,6 +61,9 @@ void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+	//Make noise test
+	//MakeNoise(1.0f, this, GetActorLocation());
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
 
 	if (m_WaypointManager == nullptr)
 	{
@@ -96,8 +100,6 @@ void AEnemyBase::FindWaypointManager()
 
 void AEnemyBase::GetNewWaypoint()
 {
-	//Needed for noise emitter
-	MakeNoise(1.0f, this, GetActorLocation());
 
 	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
 	check(m_WaypointManager && "Waypoint manager was null");
@@ -145,6 +147,11 @@ void AEnemyBase::GetNewWaypoint()
 void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//test
+	MakeNoise(6.0f, this, GetActorLocation());
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
+
 
 	if (m_WaypointManager == nullptr)
 	{
