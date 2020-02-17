@@ -26,10 +26,15 @@ protected:
 
 	int m_WaveIndex = 0; 
 
-	int m_ActiveEnemies; 
+	int m_ActiveEnemiesInCurrentWave; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies")
 		class ASpawnPoint* m_SpawnLocation;
+
+    FTimerHandle m_WaveSpawnTimer; 
+
+    UPROPERTY(EditAnywhere, Category = "Waves")
+        float m_WaveSpawnRate = 10.0f; 
 
 public:	
 	// Called every frame
@@ -39,4 +44,7 @@ public:
 
 	int GetNumEnemies(); 
 
+    void ResetRoundManagerData(); 
+
+    void SpawnNextWave(); 
 };

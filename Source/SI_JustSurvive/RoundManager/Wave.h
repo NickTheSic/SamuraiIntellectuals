@@ -29,8 +29,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
 		TArray<TSubclassOf<AEnemyGroup>> m_EnemyGroups;
 
-	//FTimerManager m_TimerManager; 
-
 	FTimerHandle m_EnemyGroupTimer;
 
 	UWorld* m_World; 
@@ -39,6 +37,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
 		float m_EnemyGroupTimerBuffer = 0.0f; 
+
+    bool bBeganSpawningEnemies = false; 
 
 public:	
 	// Called every frame
@@ -53,5 +53,7 @@ public:
 	void SetWorld(UWorld* world); 
 
 	void SetSpawnLocation(class ASpawnPoint* spawnPoint);
+
+    void ResetWaveData(); 
 
 };

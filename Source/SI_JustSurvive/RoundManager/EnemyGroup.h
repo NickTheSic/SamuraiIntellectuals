@@ -36,6 +36,8 @@ protected:
 
 	UWorld* m_World; 
 
+    bool bSpawnedAllEnemies; 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -53,4 +55,8 @@ public:
 	void SetWorld(UWorld* world); 
 
 	void SetSpawnLocation(ASpawnPoint* spawnPoint); 
+
+    void ResetEnemyGroupData(); 
+
+    bool WereAllEnemiesSpawned(); 
 };

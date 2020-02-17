@@ -33,6 +33,12 @@ void AEnemyGroup::Tick(float DeltaTime)
 
 void AEnemyGroup::SpawnAllEnemies()
 {
+    m_NextEnemyIndex = 0; 
+
+    bSpawnedAllEnemies = false; 
+
+    m_World->GetTimerManager().ClearTimer(m_EnemySpawnTimer);
+
 	m_World->GetTimerManager().SetTimer(m_EnemySpawnTimer, this, &AEnemyGroup::SpawnEnemy, m_SpawnFrequency, true); 
 }
 
@@ -72,7 +78,7 @@ void AEnemyGroup::SpawnEnemy()
 
 	if (m_NextEnemyIndex >= m_Enemies.Num())
 	{
-		ClearSpawnEnemyTimer(); 
+        bSpawnedAllEnemies = true; 
 	}
 }
 
@@ -99,4 +105,15 @@ void AEnemyGroup::SetSpawnLocation(ASpawnPoint* spawnPoint)
 {
 	m_SpawnLocation = spawnPoint; 
 }
+
+void AEnemyGroup::ResetEnemyGroupData()
+{
+    m_NextEnemyIndex = 0; 
+}
+
+bool AEnemyGroup::WereAllEnemiesSpawned()
+{
+    return bSpawnedAllEnemies; 
+}
+
 
