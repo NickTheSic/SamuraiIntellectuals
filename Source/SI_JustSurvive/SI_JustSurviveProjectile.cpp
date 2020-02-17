@@ -4,6 +4,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Enemy/EnemyBase.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "GameFramework/DamageType.h"
+
 
 ASI_JustSurviveProjectile::ASI_JustSurviveProjectile() 
 {
@@ -38,14 +41,35 @@ ASI_JustSurviveProjectile::ASI_JustSurviveProjectile()
 void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL))
 	{
 		if (Cast<AEnemyBase>(OtherActor))
 		{
+			//TODO: @Vanessa Change this to Take Damage based on projectile's damage. When enemy health is 0 Call KillEnemy() on the enemy. 
 			Cast<AEnemyBase>(OtherActor)->KillEnemy();
 		}
 
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		//Comment out for now and decide if needed later
+		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+
+		//CHANGES START
+		EPhysicalSurface SurfaceType = SurfaceType_Default;
+		FBodyInstance* BodyInstance = OtherComp->GetBodyInstance();
+		UPhysicalMaterial* PhysicsMat = BodyInstance->GetSimplePhysicalMaterial();
+
+		SurfaceType = UPhysicalMaterial::DetermineSurfaceType(PhysicsMat);
+
+		AController* MyInstigatorsController = nullptr;
+		APawn* MyInstigator = this->Instigator;		
+
+		if (MyInstigator)
+			MyInstigatorsController = MyInstigator->GetController();
+
+		TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
+		FDamageEvent DamageEvent(ValidDamageTypeClass);
+
+		OtherActor->TakeDamage(m_DamageAmount, DamageEvent, MyInstigatorsController, this);
+		//CHANGES END
 
 		Destroy();
 		

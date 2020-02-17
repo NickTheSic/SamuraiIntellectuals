@@ -19,11 +19,24 @@ AEnemyBase::AEnemyBase()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	GetCapsuleComponent()->SetCollisionProfileName("BlockAllDynamic"); 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true); 
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	//GetCapsuleComponent()->SetSimulatePhysics(true); 
+	//GetCapsuleComponent()->SetEnableGravity(false); 
+
+	GetMesh()->SetCollisionProfileName("NoCollision"); 
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemyBase::OnHit); 
 	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
 	//SetReplicates(true)
 	//SetReplicatesMovement(true);
+
+	Tags.Add("Enemy"); 
+
+	//TODO: @Vanessa Add a noise emitter to enemy and make it so the tower is instigated by by the enemy's noise emitter. Sense the player and generator with Pawn Sensing.  
+	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
@@ -150,8 +163,19 @@ void AEnemyBase::Tick(float DeltaTime)
 
 }
 
+void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	//if (Cast<ASI_>)
+}
+
 void AEnemyBase::KillEnemy()
 {
+	if (m_TargetWaypoint != nullptr)
+	{
+		//When the enemy dies we want him to give up his waypoint
+		m_TargetWaypoint->SetIsWaypointTaken(false);
+	}
+
 	this->Destroy(); 
 }
 
