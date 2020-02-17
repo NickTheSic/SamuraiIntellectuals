@@ -75,7 +75,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		MyTowerHud->AddToViewport();
 	}
 
-	//bShowMouseCursor = true;
+	bShowMouseCursor = true;
 	TArray<AActor*> CameraPawnArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
 
@@ -129,6 +129,11 @@ void ASI_PlayerController::ExitTowerShopMenu()
 
 void ASI_PlayerController::InitiateGameOver()
 {
+
+	StopJumping();
+	StopInteraction();
+	OnClickReleased();
+
 	FInputModeUIOnly UIMode;
 	SetInputMode(UIMode);
 	if (w_GameOverMenu)
