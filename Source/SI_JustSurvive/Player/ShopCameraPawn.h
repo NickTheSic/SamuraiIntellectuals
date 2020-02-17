@@ -23,7 +23,7 @@ public:
 	// Sets default values for this pawn's properties
 	AShopCameraPawn();
 
-	void SetPlaceableObject(class AItemBase* newTower);
+	void SetPlaceableObject(class ATowerBase* newTower);
 
 	void OnClickPlaceObject();
 
@@ -42,9 +42,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		class UCameraComponent* m_CameraComponent; //The camera
 
-	class AItemBase* m_PlaceableTower; //The current active object
+	class ATowerBase* m_PlaceableTower; //The current active object
 
 	bool bIsActiveInShop = false;
+	bool bCanPlaceTower = false;
+
+	UPROPERTY(EditAnywhere, Category = "Config")
+		float m_TrenchDepth = 0; //The depth of the trench.  We can cast to the top of the trench where towers can be placed but not in the trench
 
 	//TODO: I want to add a texture that follows the mouse so that it can be changed.  Showing the player it can and cant be placed
 
@@ -52,8 +56,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

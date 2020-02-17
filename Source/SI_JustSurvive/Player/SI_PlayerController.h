@@ -40,6 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 		void ExitTowerShopMenu();
 
+	class UTowerShopMenu* GetTowerShopMenu() { return MyTowerHud; };
+
 
 	//Functions to call on the pawn
 	void Jump();

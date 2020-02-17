@@ -101,3 +101,12 @@ bool ATowerBase::Purchase(ASI_PlayerController* player)
 	}
 	return false;
 }
+
+void ATowerBase::InitializeTower()
+{
+	//TODO: Check and setup what else needs to be initialized
+	if (ItemShopData.m_StaticMesh != nullptr)
+	{
+		m_TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
+	}
+}

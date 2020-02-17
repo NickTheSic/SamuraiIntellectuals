@@ -64,6 +64,7 @@ void UTowerShopMenu::ClearDisplayText()
 {
 	SetObjectText(m_NameText, "");
 	SetObjectText(m_CostText, "");
+	SetObjectText(m_PlayerMoney, "");
 }
 
 void UTowerShopMenu::ExitMenu()
@@ -104,17 +105,33 @@ void UTowerShopMenu::UpdateShopList()
 	//TODO:: Loop through and Check the cost of the item the button has.
 	//If the player has less money then the button style is disabled
 	//If not it is the regular style
-    if (m_ItemsToDisplay.Num() != 0 && m_TowerList->GetAllChildren().Num() != 0)
-    {
-        TArray<UWidget*> childButtons = m_TowerList->GetAllChildren();
-        ASI_PlayerState* ps = m_OwningPC->GetPlayerState<ASI_PlayerState>();
-        check(ps && "The player state was null");
-        if (ps != nullptr)
-        {
-            for (int i = 0; i != childButtons.Num(); i++)
-            {
 
-            }
-        }
-    }
+	ASI_PlayerState* ps = m_OwningPC->GetPlayerState<ASI_PlayerState>();
+
+	if (ps)
+	{
+		SetObjectText(m_PlayerMoney, FString::FromInt(ps->GetCurrentMoney()));
+	
+
+		if (m_ItemsToDisplay.Num() != 0 && m_TowerList->GetAllChildren().Num() != 0)
+		{
+			TArray<UWidget*> childButtons = m_TowerList->GetAllChildren();
+
+			for (int i = 0; i != childButtons.Num(); i++)
+			{
+				UTowerShopButton* towerButton = Cast<UTowerShopButton>(childButtons[i]);
+				if (towerButton)
+				{
+					if (towerButton->GetTowerCost() > ps->GetCurrentMoney())
+					{
+						towerButton->SetIsEnabled(false);
+					}
+					else
+					{
+						towerButton->SetIsEnabled(true);
+					}
+				}
+			}
+		}
+	}
 }

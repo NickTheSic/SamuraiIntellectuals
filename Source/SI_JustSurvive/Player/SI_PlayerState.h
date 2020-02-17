@@ -48,12 +48,13 @@ public:
 protected:
 	//TODO: Do we need to replicate these variables
 	//TODO:  Ask about doing the health with OnTakeDamage and FDamage
+	//TODO: Initialize these memebers
 	float m_MaxHealth;
 
 	//Replicated
 	float m_CurrentHealth;
 	//Replicated
-	int m_CurrentMoney;
+	int m_CurrentMoney = 50;
 	//Replicate?
 	bool bPlayerIsInMenu;
 

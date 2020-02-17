@@ -40,11 +40,12 @@ public:
 	UFUNCTION()
 		void ExitMenu();
 
+	void UpdateShopList();
+
 protected:
 	class ASI_PlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
 
 	void InitializeShopList();
-	void UpdateShopList();
 
 	//The purchaseable towers
 	UPROPERTY(EditAnywhere, Category = "Config")
@@ -63,6 +64,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* m_CostText = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* m_PlayerMoney = nullptr;
 
 	UPROPERTY(meta = (BindWidget))
 		class UButton* m_ExitButton = nullptr;

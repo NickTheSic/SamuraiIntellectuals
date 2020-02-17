@@ -34,9 +34,11 @@ public:
 
 	void SetOwningHud(class UTowerShopMenu* menu); //TODO: Should we check for a function that already does this
 
+	int GetTowerCost();
+
 protected:
 	class UTowerShopMenu* m_TowerHud = nullptr;
 
-	class AItemBase* m_SpawnItem = nullptr; //TODO: Check if this could be AItemBase or specifically a Tower
+	class ATowerBase* m_SpawnItem = nullptr; //TODO: Check if this could be AItemBase or specifically a Tower
 
 };

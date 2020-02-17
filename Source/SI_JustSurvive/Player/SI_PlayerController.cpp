@@ -4,6 +4,7 @@
 #include "SI_PlayerController.h"
 #include "..//SI_JustSurviveCharacter.h"
 #include "..//UI/TowerShopMenu.h"
+#include "ShopCameraPawn.h"
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShopCameraPawn.h"
@@ -182,8 +183,10 @@ void ASI_PlayerController::OnMouseClick()
 	
 	}
 
-	//if it is a CameraPawn
-	//Place active tower?
+	if (AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn()))
+	{
+		camPawn->OnClickPlaceObject();
+	}
 
 }
 

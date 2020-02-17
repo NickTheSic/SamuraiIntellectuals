@@ -8,6 +8,9 @@
 
 /*
 	Change Log:
+			2/17/2020: Nick - I added an InitialTower function.  The purpose of this is to set make sure all the data is set
+							- I added it because the way that I have things setup is odd
+
 			2/10/2020: Nick - I changed purchase to take a player controller
 */
 
@@ -67,6 +70,8 @@ public:
 	bool bCanShoot;
 
 	ATowerBase();
+
+	void InitializeTower();
 
 protected:
 	virtual void BeginPlay() override;
