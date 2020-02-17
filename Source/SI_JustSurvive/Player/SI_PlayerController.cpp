@@ -4,9 +4,11 @@
 #include "SI_PlayerController.h"
 #include "..//SI_JustSurviveCharacter.h"
 #include "..//UI/TowerShopMenu.h"
+#include "ShopCameraPawn.h"
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShopCameraPawn.h"
+#include "Blueprint/UserWidget.h"
 
 void ASI_PlayerController::OnPossess(APawn* aPawn)
 {
@@ -62,7 +64,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 	//Stop interacting with the character - due to how it is currently setup
 	MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
 
-	check (MyTowerHud && "THe hud was a nullptr")
+	check (MyTowerHud && "The hud was a nullptr")
 
 	OnUnPossess();
 	FInputModeGameAndUI UUInput;
@@ -125,6 +127,27 @@ void ASI_PlayerController::ExitTowerShopMenu()
 	OnPossess(MyOwningCharacter);
 }
 
+void ASI_PlayerController::InitiateGameOver()
+{
+
+	StopJumping();
+	StopInteraction();
+	OnClickReleased();
+
+	FInputModeUIOnly UIMode;
+	SetInputMode(UIMode);
+	if (w_GameOverMenu)
+	{
+		GameOverMenu = CreateWidget<UUserWidget>(this, w_GameOverMenu);
+
+		if (GameOverMenu)
+		{
+			GameOverMenu->AddToViewport();
+		}
+		bShowMouseCursor = true;
+	}
+}
+
 void ASI_PlayerController::Jump()
 {
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
@@ -182,8 +205,10 @@ void ASI_PlayerController::OnMouseClick()
 	
 	}
 
-	//if it is a CameraPawn
-	//Place active tower?
+	if (AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn()))
+	{
+		camPawn->OnClickPlaceObject();
+	}
 
 }
 

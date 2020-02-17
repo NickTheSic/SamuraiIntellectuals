@@ -19,18 +19,41 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
-		TArray<TSubclassOf<class AEnemyGroup>> m_EnemyGroups;
+	class AEnemyGroup* m_CurrentEnemyGroup; 
 
-	int m_EnemyGroupIndex; 
-
-	FTimerHandle EnemySpawnTimer;
+	int m_EnemyGroupIndex = 0; 
 
 	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
 		float m_EnemySpawnRate; 
 
+	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
+		TArray<TSubclassOf<AEnemyGroup>> m_EnemyGroups;
+
+	FTimerHandle m_EnemyGroupTimer;
+
+	UWorld* m_World; 
+
+	float m_EnemyGroupTimerRate; 
+
+	UPROPERTY(EditAnywhere, Category = "EnemyGroups")
+		float m_EnemyGroupTimerBuffer = 0.0f; 
+
+    bool bBeganSpawningEnemies = false; 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	int GetNumEnemies(); 
+
+	void SpawnAllEnemyGroups();
+
+	void SpawnNextEnemyGroup();
+
+	void SetWorld(UWorld* world); 
+
+	void SetSpawnLocation(class ASpawnPoint* spawnPoint);
+
+    void ResetWaveData(); 
 
 };

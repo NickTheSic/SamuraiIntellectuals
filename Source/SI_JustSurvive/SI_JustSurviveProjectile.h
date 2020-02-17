@@ -30,5 +30,9 @@ public:
 	FORCEINLINE class USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+protected:
+	UPROPERTY (EditAnywhere, Category = "Damage")
+		float m_DamageAmount = 50.0f;
 };
 

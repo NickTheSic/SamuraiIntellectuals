@@ -57,6 +57,9 @@ public:
 	//To be set when the enemy is spawned
 	void SetWaypointManager(class AWaypointManager* wayMan);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
+		class UPawnNoiseEmitterComponent* NoiseEmitterComponent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -66,6 +69,14 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Enemy Config")
 		FEnemyData EnemyData;
+	
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float m_EnemyHP = 150.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Config")
+		class ARoundManager* m_RoundManager; 
+
+	
 
 	void FindWaypointManager(); //If waypoint manager is null than we need to find it
 
@@ -81,9 +92,16 @@ protected:
 	void IncrementCurrentWaypointGroup(); 
 	void DecrementCurrentWaypointGroup(); 
 
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+		void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	void KillEnemy();
 };

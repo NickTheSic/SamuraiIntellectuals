@@ -8,6 +8,9 @@
 
 /*
 	Change Log:
+			2/17/2020: Nick - I added an InitialTower function.  The purpose of this is to set make sure all the data is set
+							- I added it because the way that I have things setup is odd
+
 			2/10/2020: Nick - I changed purchase to take a player controller
 */
 
@@ -51,22 +54,24 @@ public:
 	FTowerData m_TowerData;
 
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		class UStaticMeshComponent* TowerMesh;
+		class UStaticMeshComponent* m_TowerMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		class UPawnSensingComponent* m_PawnSensingComp;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-		class USceneComponent* FP_MuzzleLocation;
+	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
+		class USceneComponent* m_MuzzleLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectiles")
-		TSubclassOf<class ASI_JustSurviveProjectile> ProjectileTemplate;
+		TSubclassOf<class ASI_JustSurviveProjectile>m_ProjectileTemplate;
 
 	FTimerHandle SpawnProjectileTimer;
 
 	bool bCanShoot;
 
 	ATowerBase();
+
+	void InitializeTower();
 
 protected:
 	virtual void BeginPlay() override;

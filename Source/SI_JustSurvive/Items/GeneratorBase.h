@@ -19,19 +19,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-//ADDED START
 	UFUNCTION()
-		void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageInflictor);
+		void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageMesh")
-		class USceneComponent* GeneratorRoot;
+		class USceneComponent* m_ActorRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageMesh")
-		class UStaticMeshComponent* GeneratorBody;
+		class UStaticMeshComponent* m_GenMesh;
 
-	int m_HP = 100;
-
-//ADDED END
+	int m_HP = 150;
 
 public:	
 	// Called every frame

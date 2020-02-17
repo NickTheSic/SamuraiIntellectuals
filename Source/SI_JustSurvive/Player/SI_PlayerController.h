@@ -25,7 +25,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Config", meta = (AllowPrivateAccess))
 		TSubclassOf<UTowerShopMenu> TSHudTemplate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+		TSubclassOf<class UUserWidget> w_GameOverMenu;
+
+	UUserWidget* GameOverMenu;
+
+
 public:
+
 
 	//The base functions that we need
 	void OnPossess(class APawn* aPawn) override;
@@ -40,6 +47,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 		void ExitTowerShopMenu();
 
+	class UTowerShopMenu* GetTowerShopMenu() { return MyTowerHud; };
+
+	UFUNCTION(BlueprintCallable, Category = "GameOver")
+		void InitiateGameOver();
 
 	//Functions to call on the pawn
 	void Jump();
@@ -51,7 +62,7 @@ public:
 	void MoveForward(float val);
 	void MoveRight(float val);
 
-	void OnMouseClick(); //Will call fire on PlayerCharacter, but will do something else in the shop menu
+	void OnMouseClick();
 	void OnClickReleased(); 
 	void Reload(); 
 	void ChangeWeapon(float val);

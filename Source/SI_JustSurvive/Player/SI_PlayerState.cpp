@@ -2,7 +2,7 @@
 
 
 #include "SI_PlayerState.h"
-
+#include "Engine.h"
 
 float ASI_PlayerState::GetMaxHealth()
 {
@@ -22,6 +22,8 @@ int ASI_PlayerState::GetCurrentMoney()
 void ASI_PlayerState::AddCurrentMoney(int newMoneyIn)
 {
 	check(newMoneyIn > 0 && "The value passed into this was negative");
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Blue, TEXT("You added money"));
 
 	//Make sure the money is positive
 	if (newMoneyIn < 0)

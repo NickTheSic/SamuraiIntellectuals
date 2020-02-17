@@ -4,6 +4,7 @@
 #include "TowerBase.h"
 #include "Perception/PawnSensingComponent.h"
 #include "SI_JustSurvive/SI_JustSurviveCharacter.h"
+#include "SI_JustSurvive/Enemy/EnemyBase.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "SI_JustSurvive/SI_JustSurviveProjectile.h"
@@ -12,15 +13,16 @@
 
 ATowerBase::ATowerBase()
 {
-	TowerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TowerMesh"));
-	RootComponent = TowerMesh;
+	m_TowerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TowerMesh"));
+	RootComponent = m_TowerMesh;
 
 	m_PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	m_PawnSensingComp->OnHearNoise.AddDynamic(this, &ATowerBase::OnNoiseHeard);
+	m_PawnSensingComp->bOnlySensePlayers = false;
 
-	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
-	FP_MuzzleLocation->SetupAttachment(TowerMesh);
-	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
+	m_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+	m_MuzzleLocation->SetupAttachment(m_TowerMesh);
+	m_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
 
 	m_TowerData.m_FireRate = 1.5f;
 	
@@ -33,13 +35,18 @@ void ATowerBase::BeginPlay()
 
     if (ItemShopData.m_StaticMesh != nullptr)
     {
-        TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
+        m_TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
     }
 }
 
 void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, float Volume)
 {
 	//GetWorldTimerManager().SetTimer(SpawnProjectileTimer, this, &ATowerBase::ShootProjectile, m_TowerData.m_FireRate, true);
+
+	if (Cast<ASI_JustSurviveCharacter>(NoiseInstigator))
+	{
+		return;
+	}
 
 	FString message = TEXT("Saw Actor") + NoiseInstigator->GetName();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
@@ -60,7 +67,7 @@ void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location,
 
 void ATowerBase::ShootProjectile()
 {
-	if (ProjectileTemplate)
+	if (m_ProjectileTemplate)
 	{
 		bCanShoot = true;
 		UWorld* const World = GetWorld();
@@ -72,10 +79,10 @@ void ATowerBase::ShootProjectile()
 				SpawnParams.Owner = this;
 				SpawnParams.Instigator = GetInstigator();
 				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-				FVector SpawnLocation = FP_MuzzleLocation->GetComponentLocation();
-				FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
+				FVector SpawnLocation = m_MuzzleLocation->GetComponentLocation();
+				FRotator SpawnRotation = m_MuzzleLocation->GetComponentRotation();
 
-				ASI_JustSurviveProjectile* SpawnedProjectile = World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileTemplate, SpawnLocation, SpawnRotation, SpawnParams);
+				ASI_JustSurviveProjectile* SpawnedProjectile = World->SpawnActor<ASI_JustSurviveProjectile>(m_ProjectileTemplate, SpawnLocation, SpawnRotation, SpawnParams);
 				if (SpawnedProjectile)
 				{
 					SpawnedProjectile->SetLifeSpan(2.0f);
@@ -100,4 +107,13 @@ bool ATowerBase::Purchase(ASI_PlayerController* player)
 		return false;
 	}
 	return false;
+}
+
+void ATowerBase::InitializeTower()
+{
+	//TODO: Check and setup what else needs to be initialized
+	if (ItemShopData.m_StaticMesh != nullptr)
+	{
+		m_TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
+	}
 }

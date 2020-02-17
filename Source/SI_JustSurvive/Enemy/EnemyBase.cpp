@@ -10,6 +10,9 @@
 #include "Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "../RoundManager/RoundManager.h"
+#include "Components/PawnNoiseEmitterComponent.h"
+#include "SI_JustSurvive/Items/TowerBase.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -19,11 +22,30 @@ AEnemyBase::AEnemyBase()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	GetCapsuleComponent()->SetCollisionProfileName("BlockAllDynamic"); 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true); 
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	//GetCapsuleComponent()->SetSimulatePhysics(true); 
+	//GetCapsuleComponent()->SetEnableGravity(false); 
+
+	GetMesh()->SetCollisionProfileName("NoCollision"); 
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemyBase::OnHit); 
 	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
 	//SetReplicates(true)
 	//SetReplicatesMovement(true);
+
+	Tags.Add("Enemy"); 
+
+	//TODO: Have enemies take damage
+	SetCanBeDamaged(true);
+	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
+
+	//TODO: @Vanessa Add a noise emitter to enemy and make it so the tower is instigated by by the enemy's noise emitter. Sense the player and generator with Pawn Sensing.  
+	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
+	//SetMakeNoiseDelegate();
+	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
@@ -40,6 +62,16 @@ void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+	//Make noise test
+	//MakeNoise(1.0f, this, GetActorLocation());
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
+
+	TArray<AActor*> roundManagers; 
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoundManager::StaticClass(), roundManagers);
+
+	m_RoundManager = Cast<ARoundManager>(roundManagers[0]); 
+
+	//TODO: check that there is no more than one Round Manager. 
 
 	if (m_WaypointManager == nullptr)
 	{
@@ -50,7 +82,6 @@ void AEnemyBase::BeginPlay()
 	{
 		GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
 	}
-
 }
 
 void AEnemyBase::FindWaypointManager()
@@ -72,12 +103,12 @@ void AEnemyBase::FindWaypointManager()
 		{
 			SetWaypointManager(newManager); 
 		}
-
 	}
 }
 
 void AEnemyBase::GetNewWaypoint()
 {
+
 	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
 	check(m_WaypointManager && "Waypoint manager was null");
 
@@ -125,6 +156,11 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//test
+	MakeNoise(6.0f, this, GetActorLocation());
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
+
+
 	if (m_WaypointManager == nullptr)
 	{
 		FindWaypointManager();
@@ -132,6 +168,7 @@ void AEnemyBase::Tick(float DeltaTime)
 
 	if (m_TargetWaypoint != nullptr)
 	{
+
 		FVector DistanceVector = GetActorLocation() - m_TargetWaypoint->GetActorLocation();
 
 		float DistanceSize = DistanceVector.Size();
@@ -141,7 +178,6 @@ void AEnemyBase::Tick(float DeltaTime)
 			//TODO: Make this change states instead of getting a new Waypoint
 			GetNewWaypoint();
 		}
-
 	}
 	else
 	{
@@ -150,8 +186,35 @@ void AEnemyBase::Tick(float DeltaTime)
 
 }
 
+void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	//if (Cast<ASI_>)
+}
+
+void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	float m_DamageAmount = 0;
+	m_DamageAmount = Damage;
+
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
+	m_EnemyHP -= m_DamageAmount;
+
+	if (m_EnemyHP <= 0)
+	{
+		KillEnemy();
+	}
+}
+
 void AEnemyBase::KillEnemy()
 {
+	if (m_TargetWaypoint != nullptr)
+	{
+		//When the enemy dies we want him to give up his waypoint
+		m_TargetWaypoint->SetIsWaypointTaken(false);
+	}
+
+	m_RoundManager->RemoveEnemy();
+
 	this->Destroy(); 
 }
 

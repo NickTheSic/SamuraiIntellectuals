@@ -11,6 +11,8 @@
 
 /**
  * Change log:			
+			2/17/2020: Nick - Changed somethings around with the addition of Player State
+
  *			2/12/2020: Nick - Changed up how the shop gets made.  Created helper functions to help me too		
 	
 			2/9/2020: Nick - Added an Exit menu button and added the dynamic delegate to call the exit menu
@@ -40,11 +42,12 @@ public:
 	UFUNCTION()
 		void ExitMenu();
 
+	void UpdateShopList();
+
 protected:
 	class ASI_PlayerController* m_OwningPC; //TODO: Add proper player controller when the time comes
 
 	void InitializeShopList();
-	void UpdateShopList();
 
 	//The purchaseable towers
 	UPROPERTY(EditAnywhere, Category = "Config")
@@ -63,6 +66,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* m_CostText = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* m_PlayerMoney = nullptr;
 
 	UPROPERTY(meta = (BindWidget))
 		class UButton* m_ExitButton = nullptr;
