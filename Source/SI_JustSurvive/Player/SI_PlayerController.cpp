@@ -285,13 +285,23 @@ void ASI_PlayerController::ControllerForMouseClick()
 		FViewportClient* client = GEngine->GameViewport->Viewport->GetClient();
 		FKey mouseLMB = EKeys::LeftMouseButton;
 		client->InputKey(GEngine->GameViewport->Viewport, 0, mouseLMB, EInputEvent::IE_Pressed);
-		FSlateApplication& SlateApp = FSlateApplication::Get();
 
-		FPointerEvent mouseDown(0, SlateApp.GetCursorPos(), SlateApp.GetLastCursorPos(), SlateApp.GetPressedMouseButtons(), EKeys::LeftMouseButton, 0, SlateApp.GetPlatformApplication()->GetModifierKeys() );
-	
+
+		FSlateApplication& SlateApp = FSlateApplication::Get();
+		
+		FPointerEvent mouseDown(
+			0, 
+			SlateApp.GetCursorPos(), 
+			SlateApp.GetLastCursorPos(), 
+			SlateApp.GetPressedMouseButtons(), 
+			EKeys::LeftMouseButton, 
+			0, 
+			SlateApp.GetPlatformApplication()->GetModifierKeys()
+		);
+		
 		TSharedPtr<FGenericWindow> window;
 		SlateApp.ProcessMouseButtonDownEvent(window, mouseDown);
-	}
+	}	
 }
 
 void ASI_PlayerController::ControllerForMouseUp()
@@ -302,10 +312,10 @@ void ASI_PlayerController::ControllerForMouseUp()
 		FViewportClient* Client = GEngine->GameViewport->Viewport->GetClient();
 		FKey MouseLMB = EKeys::LeftMouseButton;
 		Client->InputKey(GEngine->GameViewport->Viewport, 0, MouseLMB, EInputEvent::IE_Released);
-
+		
 		//trigger the UI mouse click
 		FSlateApplication& SlateApp = FSlateApplication::Get();
-
+		
 		FPointerEvent MouseUpEvent(
 			0,
 			SlateApp.CursorPointerIndex,
@@ -316,7 +326,7 @@ void ASI_PlayerController::ControllerForMouseUp()
 			0,
 			SlateApp.GetPlatformApplication()->GetModifierKeys()
 		);
-
+		
 		TSharedPtr<FGenericWindow> GenWindow;
 		SlateApp.ProcessMouseButtonUpEvent(MouseUpEvent);
 	}
