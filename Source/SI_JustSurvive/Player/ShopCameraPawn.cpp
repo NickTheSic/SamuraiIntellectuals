@@ -125,7 +125,7 @@ bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 		FCollisionQueryParams FCQP;
 		FCQP.AddIgnoredActor(this);
 
-		//DrawDebugLine(world, Start, End, FColor::Cyan, true);
+		DrawDebugLine(world, Start, End, FColor::Cyan, true);
 
 		return world->LineTraceSingleByObjectType(hit, Start, End, FCollisionObjectQueryParams::AllObjects, FCQP);
 	}
