@@ -57,6 +57,8 @@ void ASI_PlayerController::SetupInputComponent()
 
 	InputComponent->BindAxis("MoveForward", this, &ASI_PlayerController::ControllerYForMouseY);
 	InputComponent->BindAxis("MoveRight", this, &ASI_PlayerController::ControllerXForMouseX);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ASI_PlayerController::ControllerForMouseClick);
+	InputComponent->BindAction("Jump", IE_Released, this, &ASI_PlayerController::ControllerForMouseUp);
 
 }
 
@@ -73,9 +75,10 @@ void ASI_PlayerController::EnterTowerShopMenu()
 	FInputModeGameAndUI UUInput;
 	SetInputMode(UUInput);
 
-	if (MyTowerHud && !MyTowerHud->IsInViewport())
+	if (MyTowerHud)
 	{
-		MyTowerHud->AddToViewport();
+		if (!MyTowerHud->IsInViewport())
+			MyTowerHud->AddToViewport();
 	}
 
 	bShowMouseCursor = true;
@@ -279,6 +282,42 @@ void ASI_PlayerController::ControllerForMouseClick()
 {
 	if (Cast<AShopCameraPawn>(GetPawn()))
 	{
-		
+		FViewportClient* client = GEngine->GameViewport->Viewport->GetClient();
+		FKey mouseLMB = EKeys::LeftMouseButton;
+		client->InputKey(GEngine->GameViewport->Viewport, 0, mouseLMB, EInputEvent::IE_Pressed);
+		FSlateApplication& SlateApp = FSlateApplication::Get();
+
+		FPointerEvent mouseDown(0, SlateApp.GetCursorPos(), SlateApp.GetLastCursorPos(), SlateApp.GetPressedMouseButtons(), EKeys::LeftMouseButton, 0, SlateApp.GetPlatformApplication()->GetModifierKeys() );
+	
+		TSharedPtr<FGenericWindow> window;
+		SlateApp.ProcessMouseButtonDownEvent(window, mouseDown);
+	}
+}
+
+void ASI_PlayerController::ControllerForMouseUp()
+{
+	if (Cast<AShopCameraPawn>(GetPawn()))
+	{
+		//trigger the mouse click release event
+		FViewportClient* Client = GEngine->GameViewport->Viewport->GetClient();
+		FKey MouseLMB = EKeys::LeftMouseButton;
+		Client->InputKey(GEngine->GameViewport->Viewport, 0, MouseLMB, EInputEvent::IE_Released);
+
+		//trigger the UI mouse click
+		FSlateApplication& SlateApp = FSlateApplication::Get();
+
+		FPointerEvent MouseUpEvent(
+			0,
+			SlateApp.CursorPointerIndex,
+			SlateApp.GetCursorPos(),
+			SlateApp.GetLastCursorPos(),
+			SlateApp.GetPressedMouseButtons(),
+			EKeys::LeftMouseButton,
+			0,
+			SlateApp.GetPlatformApplication()->GetModifierKeys()
+		);
+
+		TSharedPtr<FGenericWindow> GenWindow;
+		SlateApp.ProcessMouseButtonUpEvent(MouseUpEvent);
 	}
 }
