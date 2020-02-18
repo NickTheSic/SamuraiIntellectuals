@@ -55,6 +55,9 @@ void ASI_PlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveForward", this, &ASI_PlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASI_PlayerController::MoveRight);
 
+	InputComponent->BindAxis("MoveForward", this, &ASI_PlayerController::ControllerYForMouseY);
+	InputComponent->BindAxis("MoveRight", this, &ASI_PlayerController::ControllerXForMouseX);
+
 }
 
 void ASI_PlayerController::EnterTowerShopMenu()
@@ -245,5 +248,37 @@ void ASI_PlayerController::BeginPlay()
 	{
 		MyTowerHud->SetOwningPlayerController(this);
 		MyTowerHud->RemoveFromViewport();
+	}
+}
+
+void ASI_PlayerController::ControllerXForMouseX(float val)
+{
+	//Only if the val iusn't 0 and we are in the camera shop
+	if (val != 0 && Cast<AShopCameraPawn>(GetPawn()))
+	{
+		float x, y;
+		GetMousePosition(x, y);
+		x += val;
+		SetMouseLocation(x, y);
+	}
+}
+
+void ASI_PlayerController::ControllerYForMouseY(float val)
+{
+	//Only if the val iusn't 0 and we are in the camera shop
+	if (val != 0 && Cast<AShopCameraPawn>(GetPawn()))
+	{
+		float x, y;
+		GetMousePosition(x, y);
+		y += val;
+		SetMouseLocation(x, y);
+	}
+}
+
+void ASI_PlayerController::ControllerForMouseClick()
+{
+	if (Cast<AShopCameraPawn>(GetPawn()))
+	{
+		
 	}
 }
