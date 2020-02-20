@@ -72,6 +72,8 @@ public:
 	void ControllerYForMouseY(float val);
 	void ControllerForMouseClick();
 
+	void ControllerForMouseUp();
+
 protected:
 
 	void BeginPlay() override;
