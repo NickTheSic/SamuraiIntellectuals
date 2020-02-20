@@ -55,8 +55,8 @@ void ASI_PlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveForward", this, &ASI_PlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASI_PlayerController::MoveRight);
 
-	InputComponent->BindAxis("MoveForward", this, &ASI_PlayerController::ControllerYForMouseY);
-	InputComponent->BindAxis("MoveRight", this, &ASI_PlayerController::ControllerXForMouseX);
+	InputComponent->BindAxis("ControllerMenuUp", this, &ASI_PlayerController::ControllerYForMouseY);
+	InputComponent->BindAxis("ControllerMenuRight", this, &ASI_PlayerController::ControllerXForMouseX);
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ASI_PlayerController::ControllerForMouseClick);
 	InputComponent->BindAction("Jump", IE_Released, this, &ASI_PlayerController::ControllerForMouseUp);
 
@@ -193,6 +193,11 @@ void ASI_PlayerController::MoveForward(float val)
 	{
 		Char->MoveForward(val); 
 	}
+
+	if (AShopCameraPawn* CamPawn = Cast<AShopCameraPawn>(GetPawn()))
+	{
+		CamPawn->MoveUp(val);
+	}
 }
 
 void ASI_PlayerController::MoveRight(float val)
@@ -201,6 +206,10 @@ void ASI_PlayerController::MoveRight(float val)
 	{
 		Char->MoveRight(val); 
 	}
+	if (AShopCameraPawn* CamPawn = Cast<AShopCameraPawn>(GetPawn()))
+	{
+		CamPawn->MoveRight(val);
+	}
 }
 
 void ASI_PlayerController::OnMouseClick()
@@ -208,7 +217,6 @@ void ASI_PlayerController::OnMouseClick()
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{	
 		Char->PullTrigger(); 
-	
 	}
 
 	if (AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn()))
@@ -285,8 +293,8 @@ void ASI_PlayerController::ControllerForMouseClick()
 		FViewportClient* client = GEngine->GameViewport->Viewport->GetClient();
 		FKey mouseLMB = EKeys::LeftMouseButton;
 		client->InputKey(GEngine->GameViewport->Viewport, 0, mouseLMB, EInputEvent::IE_Pressed);
-
-
+	
+	
 		FSlateApplication& SlateApp = FSlateApplication::Get();
 		
 		FPointerEvent mouseDown(

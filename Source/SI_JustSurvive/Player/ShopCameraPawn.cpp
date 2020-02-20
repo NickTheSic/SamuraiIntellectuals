@@ -93,8 +93,6 @@ void AShopCameraPawn::OnClickPlaceObject()
 			//Update the Menu with the new money we have and deactivate the buttons if we don't have enough
 			pc->GetTowerShopMenu()->UpdateShopList();
 		}
-
-
 	}
 }
 
@@ -139,6 +137,31 @@ void AShopCameraPawn::EnteringShop()
 	bIsActiveInShop = true;
 	m_PlaceableTower = nullptr;
 	bCanPlaceTower = false;
+}
+
+void AShopCameraPawn::MoveUp(float val)
+{
+	if (val != 0)
+	{
+		FVector pos = GetActorLocation();
+		pos.X += val * 50;
+		SetActorLocation(pos);
+	}
+}
+
+void AShopCameraPawn::MoveRight(float val)
+{
+	if (val != 0)
+	{
+		FVector pos = GetActorLocation();
+		pos.Y += val * 50;
+		SetActorLocation(pos);
+	}
+}
+
+void AShopCameraPawn::Zoom(float val)
+{
+
 }
 
 void AShopCameraPawn::ExitingShop()
