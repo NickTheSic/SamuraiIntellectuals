@@ -18,3 +18,5 @@ Interact:
 Movement:
     WASD
     Gamepad Left Thumbstick
+    
+Click to Purchase and place towers
