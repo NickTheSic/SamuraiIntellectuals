@@ -42,6 +42,7 @@ struct SI_JUSTSURVIVE_API FEnemyData
 
 	UPROPERTY(EditAnywhere, Category = "Config")
 		float m_EnemySpeed = 50; //TODO: Actually set this up to work
+
 };
 
 
@@ -60,6 +61,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Noise")
 		class UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 
+	UPROPERTY(EditAnywhere, Category = "Pawn Sensing")
+		class UPawnSensingComponent* PawnSensing;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -76,7 +80,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Enemy Config")
 		class ARoundManager* m_RoundManager; 
 
-	
+	UFUNCTION()
+	void OnPawnSeen(APawn* pawn);
+	APawn* TargetPawn;
 
 	void FindWaypointManager(); //If waypoint manager is null than we need to find it
 

@@ -13,6 +13,9 @@
 #include "../RoundManager/RoundManager.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "SI_JustSurvive/Items/TowerBase.h"
+#include "Perception/PawnSensingComponent.h"
+#include "SI_JustSurvive/SI_JustSurviveCharacter.h"
+#include "SI_JustSurvive/Items/GeneratorBase.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -46,6 +49,9 @@ AEnemyBase::AEnemyBase()
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
 	//SetMakeNoiseDelegate();
 	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
+
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>("Pawn Sensor");
+	PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBase::OnPawnSeen);
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
@@ -189,6 +195,18 @@ void AEnemyBase::Tick(float DeltaTime)
 void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//if (Cast<ASI_>)
+}
+
+void AEnemyBase::OnPawnSeen(APawn* pawn)
+{
+	//Do we want the enemy to make sure we get the player over generator or vice versa
+	if (Cast<ASI_JustSurviveCharacter>(pawn) || Cast<AGeneratorBase>(pawn))
+	{
+		TargetPawn = pawn;
+		//TODO: Rotate towards pawn
+	}
+	else
+		TargetPawn = nullptr;
 }
 
 void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)

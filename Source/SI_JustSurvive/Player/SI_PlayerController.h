@@ -17,10 +17,12 @@ class SI_JUSTSURVIVE_API ASI_PlayerController : public APlayerController
 protected:
 	
 	//A Reference to the initial pawn we possess so that we can repossess it
+	UPROPERTY()
 	class ASI_JustSurviveCharacter* MyOwningCharacter = nullptr; 
 
 	//The tower menu for the player
-	class UTowerShopMenu* MyTowerHud; 
+    UPROPERTY()
+	class UTowerShopMenu* MyTowerHud = nullptr; 
 
 	UPROPERTY(EditAnywhere, Category = "Config", meta = (AllowPrivateAccess))
 		TSubclassOf<UTowerShopMenu> TSHudTemplate;
@@ -28,6 +30,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 		TSubclassOf<class UUserWidget> w_GameOverMenu;
 
+	UPROPERTY()
 	UUserWidget* GameOverMenu;
 
 
