@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "GeneratorBase.generated.h"
 
 UCLASS()
-class SI_JUSTSURVIVE_API AGeneratorBase : public AActor
+class SI_JUSTSURVIVE_API AGeneratorBase : public APawn
 {
 	GENERATED_BODY()
 	
