@@ -16,6 +16,8 @@
 #include "Perception/PawnSensingComponent.h"
 #include "SI_JustSurvive/SI_JustSurviveCharacter.h"
 #include "SI_JustSurvive/Items/GeneratorBase.h"
+#include "SI_JustSurvive/SI_JustSurviveProjectile.h"
+#include <TimerManager.h>
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -234,6 +236,39 @@ void AEnemyBase::KillEnemy()
 	m_RoundManager->RemoveEnemy();
 
 	this->Destroy(); 
+}
+
+void AEnemyBase::Shoot()
+{
+    FTimerManager& Timer = GetWorldTimerManager(); 
+    Timer.SetTimer(m_EnemyFireTimer, this, &AEnemyBase::Shoot, m_EnemyFireRate, true, 0.2);
+}
+
+void AEnemyBase::SpawnProjectile()
+{
+    if (ProjectileClass != nullptr)
+    {
+        UWorld* const World = GetWorld(); 
+        if (World != nullptr)
+        {
+            const FRotator SpawnRotation = GetControlRotation(); 
+
+            //TODO: @Anthony Add a socket to the enemy meshes called "Muzzle"
+            const FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle"); 
+
+            FActorSpawnParameters ActorSpawnParams; 
+            ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; 
+
+            ASI_JustSurviveProjectile* projectile = World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams); 
+            projectile->SetOwner(this); 
+
+        }
+    }
+}
+
+void AEnemyBase::ClearShootTimer()
+{
+    GetWorld()->GetTimerManager().ClearTimer(m_EnemyFireTimer); 
 }
 
 void AEnemyBase::IncrementCurrentWaypointGroup()
