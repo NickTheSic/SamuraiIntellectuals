@@ -14,6 +14,7 @@ void ASI_PlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
+	check(aPawn != nullptr && "The pawn was null");
 
 	//If it is a character pawn and our member pawn is null set it to the passed in pawn
 	if (MyOwningCharacter == nullptr)
@@ -64,73 +65,81 @@ void ASI_PlayerController::SetupInputComponent()
 
 void ASI_PlayerController::EnterTowerShopMenu()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Entering the TowerShop Menu");
-
-	//Stop interacting with the character - due to how it is currently setup
-	MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
-
-	check (MyTowerHud && "The hud was a nullptr")
-
-	OnUnPossess();
-	FInputModeGameAndUI UUInput;
-	SetInputMode(UUInput);
-
-	if (MyTowerHud)
+	if (IsLocalPlayerController())
 	{
-		if (!MyTowerHud->IsInViewport())
-			MyTowerHud->AddToViewport();
-	}
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Entering the TowerShop Menu");
 
-	bShowMouseCursor = true;
-	TArray<AActor*> CameraPawnArray;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
+		//Stop interacting with the character - due to how it is currently setup
+		if (MyOwningCharacter != nullptr)
+			MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
 
-	APawn* newPawn = nullptr;
+		check(MyTowerHud && "The hud was a nullptr")
 
-	for (int i = 0; i < CameraPawnArray.Num(); i++)
-	{
-		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
-		if (camPawn)
+			OnUnPossess();
+		FInputModeGameAndUI UUInput;
+		SetInputMode(UUInput);
+
+		if (MyTowerHud != nullptr)
 		{
-			if (camPawn->GetIsActiveInShop() == false)
+			if (MyTowerHud->IsInViewport() == false)
+				MyTowerHud->AddToPlayerScreen();
+			bShowMouseCursor = true;
+		}
+
+		TArray<AActor*> CameraPawnArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
+
+		APawn* newPawn = nullptr;
+
+		for (int i = 0; i < CameraPawnArray.Num(); i++)
+		{
+			AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
+			if (camPawn)
 			{
-				camPawn->EnteringShop();
-				newPawn = Cast<APawn>(camPawn);
-				break;
+				if (camPawn->GetIsActiveInShop() == false)
+				{
+					camPawn->EnteringShop();
+					newPawn = Cast<APawn>(camPawn);
+					break;
+				}
 			}
 		}
+
+		//TODO: we will have to check if we succesfully entered the shop
+		check(newPawn && "New Pawn was Nullptr trying to possess"); //Probably forgot to add CameraPawns to the scene
+
+		newPawn == nullptr ? Possess(MyOwningCharacter) : Possess(newPawn);
 	}
-
-	//TODO: we will have to check if we succesfully entered the shop
-	check(newPawn && "New Pawn was Nullptr trying to possess"); //Probably forgot to add CameraPawns to the scene
-
-	newPawn == nullptr ? Possess(MyOwningCharacter) : Possess(newPawn);
 }
 
 void ASI_PlayerController::ExitTowerShopMenu()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Exiting the TowerShop Menu");
-
-	AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
-	if (camPawn)
+	if (IsLocalPlayerController())
 	{
-		camPawn->ExitingShop();
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Exiting the TowerShop Menu");
+
+		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
+		if (camPawn)
+		{
+			camPawn->ExitingShop();
+		}
+
+		OnUnPossess();
+		FInputModeGameOnly GameInput;
+		SetInputMode(GameInput);
+
+		if (MyTowerHud && MyTowerHud->IsInViewport())
+		{
+			MyTowerHud->RemoveFromViewport();
+			bShowMouseCursor = false;
+		}
+
+
+		if (MyOwningCharacter != nullptr)
+			MyOwningCharacter->StopInteraction(); //TODO: I think this could be cleaner - Nick
+
+		OnPossess(MyOwningCharacter);
 	}
-
-	OnUnPossess();
-	FInputModeGameOnly GameInput;
-	SetInputMode(GameInput);
-
-	if (MyTowerHud && MyTowerHud->IsInViewport())
-	{
-		MyTowerHud->RemoveFromViewport();
-	}
-
-	bShowMouseCursor = false;
-
-	MyOwningCharacter->StopInteraction(); //TODO: I think this could be cleaner - Nick
-
-	OnPossess(MyOwningCharacter);
 }
 
 void ASI_PlayerController::InitiateGameOver()
@@ -253,12 +262,14 @@ void ASI_PlayerController::ChangeWeapon(float val)
 void ASI_PlayerController::BeginPlay()
 {
 	Super::BeginPlay(); 
-
-	MyTowerHud = CreateWidget<UTowerShopMenu>(this, TSHudTemplate);
-	if (MyTowerHud)
+	if (IsLocalPlayerController())
 	{
-		MyTowerHud->SetOwningPlayerController(this);
-		MyTowerHud->RemoveFromViewport();
+		MyTowerHud = CreateWidget<UTowerShopMenu>(this, TSHudTemplate);
+		if (MyTowerHud)
+		{
+			MyTowerHud->SetOwningPlayerController(this);
+			MyTowerHud->RemoveFromViewport();
+		}
 	}
 }
 

@@ -215,7 +215,8 @@ void ASI_JustSurviveCharacter::StartInteraction()
 
 void ASI_JustSurviveCharacter::StopInteraction()
 {
-	bIsInteracting = false; 
+	if (this != nullptr) //I was getting a nullptr so I added this - Nick
+		bIsInteracting = false; 
 }
 
 void ASI_JustSurviveCharacter::ChangeWeapon(float val)
