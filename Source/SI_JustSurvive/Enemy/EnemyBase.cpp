@@ -216,7 +216,7 @@ void AEnemyBase::OnPawnSeen(APawn* pawn)
 	{
         TargetPawn = pawn;
         m_TargetWaypoint->SetIsWaypointTaken(false); 
-        m_TargetWaypoint = nullptr; 
+        //m_TargetWaypoint = nullptr; 
 
         bCanShoot = true; 
         FVector Direction = pawn->GetActorLocation() - GetActorLocation();
