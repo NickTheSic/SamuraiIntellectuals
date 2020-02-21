@@ -215,7 +215,8 @@ void AEnemyBase::OnPawnSeen(APawn* pawn)
 	if (Cast<ASI_JustSurviveCharacter>(pawn) || Cast<AGeneratorBase>(pawn))
 	{
         TargetPawn = pawn;
-        m_TargetWaypoint->SetIsWaypointTaken(false); 
+		//TODO: Later
+        //m_TargetWaypoint->SetIsWaypointTaken(false); 
         //m_TargetWaypoint = nullptr; 
 
         bCanShoot = true; 
