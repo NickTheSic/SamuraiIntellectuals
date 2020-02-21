@@ -103,8 +103,12 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Enemy Config")
         float m_EnemyFireRate; 
 
+    float m_CanShootTimer; 
+
     UPROPERTY(EditDefaultsOnly, Category = "Enemy Config")
         TSubclassOf<class ASI_JustSurviveProjectile> ProjectileClass;
+
+    bool bCanShoot = false; 
 
 public:	
 	// Called every frame
