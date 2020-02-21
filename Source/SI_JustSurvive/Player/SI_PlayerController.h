@@ -67,6 +67,13 @@ public:
 	void Reload(); 
 	void ChangeWeapon(float val);
 
+	//Controller functions for the menu
+	void ControllerXForMouseX(float val);
+	void ControllerYForMouseY(float val);
+	void ControllerForMouseClick();
+
+	void ControllerForMouseUp();
+
 protected:
 
 	void BeginPlay() override;

@@ -55,6 +55,11 @@ void ASI_PlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveForward", this, &ASI_PlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASI_PlayerController::MoveRight);
 
+	InputComponent->BindAxis("ControllerMenuUp", this, &ASI_PlayerController::ControllerYForMouseY);
+	InputComponent->BindAxis("ControllerMenuRight", this, &ASI_PlayerController::ControllerXForMouseX);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ASI_PlayerController::ControllerForMouseClick);
+	InputComponent->BindAction("Jump", IE_Released, this, &ASI_PlayerController::ControllerForMouseUp);
+
 }
 
 void ASI_PlayerController::EnterTowerShopMenu()
@@ -70,9 +75,10 @@ void ASI_PlayerController::EnterTowerShopMenu()
 	FInputModeGameAndUI UUInput;
 	SetInputMode(UUInput);
 
-	if (MyTowerHud && !MyTowerHud->IsInViewport())
+	if (MyTowerHud)
 	{
-		MyTowerHud->AddToViewport();
+		if (!MyTowerHud->IsInViewport())
+			MyTowerHud->AddToViewport();
 	}
 
 	bShowMouseCursor = true;
@@ -187,6 +193,11 @@ void ASI_PlayerController::MoveForward(float val)
 	{
 		Char->MoveForward(val); 
 	}
+
+	if (AShopCameraPawn* CamPawn = Cast<AShopCameraPawn>(GetPawn()))
+	{
+		CamPawn->MoveUp(val);
+	}
 }
 
 void ASI_PlayerController::MoveRight(float val)
@@ -195,6 +206,10 @@ void ASI_PlayerController::MoveRight(float val)
 	{
 		Char->MoveRight(val); 
 	}
+	if (AShopCameraPawn* CamPawn = Cast<AShopCameraPawn>(GetPawn()))
+	{
+		CamPawn->MoveRight(val);
+	}
 }
 
 void ASI_PlayerController::OnMouseClick()
@@ -202,7 +217,6 @@ void ASI_PlayerController::OnMouseClick()
 	if (ASI_JustSurviveCharacter * Char = Cast<ASI_JustSurviveCharacter>(GetPawn()))
 	{	
 		Char->PullTrigger(); 
-	
 	}
 
 	if (AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn()))
@@ -245,5 +259,83 @@ void ASI_PlayerController::BeginPlay()
 	{
 		MyTowerHud->SetOwningPlayerController(this);
 		MyTowerHud->RemoveFromViewport();
+	}
+}
+
+void ASI_PlayerController::ControllerXForMouseX(float val)
+{
+	//Only if the val iusn't 0 and we are in the camera shop
+	if (val != 0 && Cast<AShopCameraPawn>(GetPawn()))
+	{
+		float x, y;
+		GetMousePosition(x, y);
+		x += val;
+		SetMouseLocation(x, y);
+	}
+}
+
+void ASI_PlayerController::ControllerYForMouseY(float val)
+{
+	//Only if the val iusn't 0 and we are in the camera shop
+	if (val != 0 && Cast<AShopCameraPawn>(GetPawn()))
+	{
+		float x, y;
+		GetMousePosition(x, y);
+		y += val;
+		SetMouseLocation(x, y);
+	}
+}
+
+void ASI_PlayerController::ControllerForMouseClick()
+{
+	if (Cast<AShopCameraPawn>(GetPawn()))
+	{
+		FViewportClient* client = GEngine->GameViewport->Viewport->GetClient();
+		FKey mouseLMB = EKeys::LeftMouseButton;
+		client->InputKey(GEngine->GameViewport->Viewport, 0, mouseLMB, EInputEvent::IE_Pressed);
+	
+	
+		FSlateApplication& SlateApp = FSlateApplication::Get();
+		
+		FPointerEvent mouseDown(
+			0, 
+			SlateApp.GetCursorPos(), 
+			SlateApp.GetLastCursorPos(), 
+			SlateApp.GetPressedMouseButtons(), 
+			EKeys::LeftMouseButton, 
+			0, 
+			SlateApp.GetPlatformApplication()->GetModifierKeys()
+		);
+		
+		TSharedPtr<FGenericWindow> window;
+		SlateApp.ProcessMouseButtonDownEvent(window, mouseDown);
+	}	
+}
+
+void ASI_PlayerController::ControllerForMouseUp()
+{
+	if (Cast<AShopCameraPawn>(GetPawn()))
+	{
+		//trigger the mouse click release event
+		FViewportClient* Client = GEngine->GameViewport->Viewport->GetClient();
+		FKey MouseLMB = EKeys::LeftMouseButton;
+		Client->InputKey(GEngine->GameViewport->Viewport, 0, MouseLMB, EInputEvent::IE_Released);
+		
+		//trigger the UI mouse click
+		FSlateApplication& SlateApp = FSlateApplication::Get();
+		
+		FPointerEvent MouseUpEvent(
+			0,
+			SlateApp.CursorPointerIndex,
+			SlateApp.GetCursorPos(),
+			SlateApp.GetLastCursorPos(),
+			SlateApp.GetPressedMouseButtons(),
+			EKeys::LeftMouseButton,
+			0,
+			SlateApp.GetPlatformApplication()->GetModifierKeys()
+		);
+		
+		TSharedPtr<FGenericWindow> GenWindow;
+		SlateApp.ProcessMouseButtonUpEvent(MouseUpEvent);
 	}
 }

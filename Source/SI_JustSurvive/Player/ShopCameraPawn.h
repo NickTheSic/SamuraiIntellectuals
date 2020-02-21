@@ -33,6 +33,11 @@ public:
 
 	void OnClickPlaceObject();
 
+	void MoveUp(float val);
+	void MoveRight(float val);
+
+	void Zoom(float val); //Might not be using this for alpha 1
+
 	//TODO: Add a function that changes the mouse cursor colour if we can't place it
 	bool  CheckCanPlaceUnderMouse();
 
