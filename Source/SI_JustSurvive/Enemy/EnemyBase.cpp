@@ -16,6 +16,8 @@
 #include "Perception/PawnSensingComponent.h"
 #include "SI_JustSurvive/SI_JustSurviveCharacter.h"
 #include "SI_JustSurvive/Items/GeneratorBase.h"
+#include "SI_JustSurvive/SI_JustSurviveProjectile.h"
+#include <TimerManager.h>
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -190,6 +192,16 @@ void AEnemyBase::Tick(float DeltaTime)
 		GetNewWaypoint(); //If we don't have a waypoint we want one.  There is a check within GetNewWaypoint
 	}
 
+    if (bCanShoot)
+    {
+        m_CanShootTimer += DeltaTime; 
+
+        if (m_CanShootTimer > 3.0f)
+        {
+            bCanShoot = false; 
+        }
+    }
+
 }
 
 void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -202,11 +214,31 @@ void AEnemyBase::OnPawnSeen(APawn* pawn)
 	//Do we want the enemy to make sure we get the player over generator or vice versa
 	if (Cast<ASI_JustSurviveCharacter>(pawn) || Cast<AGeneratorBase>(pawn))
 	{
-		TargetPawn = pawn;
-		//TODO: Rotate towards pawn
+        TargetPawn = pawn;
+        m_TargetWaypoint->SetIsWaypointTaken(false); 
+        m_TargetWaypoint = nullptr; 
+
+        bCanShoot = true; 
+        FVector Direction = pawn->GetActorLocation() - GetActorLocation();
+        Direction.Normalize();
+
+        FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+        NewLookAt.Pitch = 0.0f;
+        NewLookAt.Roll = 0.0f;
+        SetActorRotation(NewLookAt);
+
+        if (bCanShoot)
+        {
+            Shoot(); 
+            bCanShoot = false; 
+      
+        }
 	}
-	else
-		TargetPawn = nullptr;
+	
+    if (pawn == nullptr)
+    {
+        ClearShootTimer(); 
+    }
 }
 
 void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
@@ -234,6 +266,41 @@ void AEnemyBase::KillEnemy()
 	m_RoundManager->RemoveEnemy();
 
 	this->Destroy(); 
+}
+
+void AEnemyBase::Shoot()
+{
+    FTimerManager& Timer = GetWorldTimerManager(); 
+    Timer.SetTimer(m_EnemyFireTimer, this, &AEnemyBase::SpawnProjectile, m_EnemyFireRate, false, 0.2);
+}
+
+void AEnemyBase::SpawnProjectile()
+{
+    if (ProjectileClass != nullptr)
+    {
+        UWorld* const World = GetWorld(); 
+        if (World != nullptr)
+        {
+            const FRotator SpawnRotation = GetControlRotation(); 
+
+            //TODO: @Anthony Add a socket to the enemy meshes called "Muzzle"
+            const FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle"); 
+
+            FActorSpawnParameters ActorSpawnParams; 
+            ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; 
+
+            ASI_JustSurviveProjectile* projectile = World->SpawnActor<ASI_JustSurviveProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams); 
+            projectile->SetOwner(this); 
+
+            bCanShoot = false; 
+
+        }
+    }
+}
+
+void AEnemyBase::ClearShootTimer()
+{
+    GetWorld()->GetTimerManager().ClearTimer(m_EnemyFireTimer); 
 }
 
 void AEnemyBase::IncrementCurrentWaypointGroup()
