@@ -98,6 +98,13 @@ protected:
 	void IncrementCurrentWaypointGroup(); 
 	void DecrementCurrentWaypointGroup(); 
 
+    FTimerHandle m_EnemyFireTimer; 
+
+    UPROPERTY(EditAnywhere, Category = "Enemy Config")
+        float m_EnemyFireRate; 
+
+    UPROPERTY(EditDefaultsOnly, Category = "Enemy Config")
+        TSubclassOf<class ASI_JustSurviveProjectile> ProjectileClass;
 
 public:	
 	// Called every frame
@@ -110,4 +117,8 @@ public:
 		void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	void KillEnemy();
+
+    void Shoot(); 
+    void SpawnProjectile();
+    void ClearShootTimer(); 
 };
