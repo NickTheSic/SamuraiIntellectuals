@@ -2,10 +2,10 @@
 
 Samurai Intellectuals:
 	Nick Lemmon - Programmer
-	Austin Brant - Artist
-	Heidi Alipda - Artist
 	Anthony D'Alessandro - Programmer
 	Vanessa Rakoczy - Programmer
+	Austin Brant - Artist
+	Heidi Alipda - Artist
 
 
 Controls:
