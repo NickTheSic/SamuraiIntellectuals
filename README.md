@@ -17,7 +17,7 @@ Keyboard + Mouse
 
 	Mouse to aim
 
-	Click to shoot
+	Hold Down Left-Click to shoot
 
 	E to interact
 
