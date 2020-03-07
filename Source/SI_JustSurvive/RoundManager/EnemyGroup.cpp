@@ -37,7 +37,7 @@ void AEnemyGroup::SpawnAllEnemies()
 
     bSpawnedAllEnemies = false; 
 
-    m_World->GetTimerManager().ClearTimer(m_EnemySpawnTimer);
+    //m_World->GetTimerManager().ClearTimer(m_EnemySpawnTimer);
 
 	m_World->GetTimerManager().SetTimer(m_EnemySpawnTimer, this, &AEnemyGroup::SpawnEnemy, m_SpawnFrequency, true); 
 }
