@@ -1,0 +1,7 @@
+{
+  "GameMaps": {
+    "maps": [  
+      { "name":"Map1", "info":[ "/Game/Maps/Trench-Persistent", "2", "Description" ] },
+       ] 
+  }
+}
