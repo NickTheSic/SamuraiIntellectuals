@@ -33,6 +33,9 @@ void AEnemyGroup::Tick(float DeltaTime)
 
 void AEnemyGroup::SpawnAllEnemies()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
     m_NextEnemyIndex = 0; 
 
     bSpawnedAllEnemies = false; 
@@ -44,11 +47,17 @@ void AEnemyGroup::SpawnAllEnemies()
 
 void AEnemyGroup::ClearSpawnEnemyTimer()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
 	m_World->GetTimerManager().ClearTimer(m_EnemySpawnTimer); 
 }
 
 void AEnemyGroup::SpawnEnemy()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
 	if (m_NextEnemyIndex < m_Enemies.Num())
 	{
 		if (m_Enemies[m_NextEnemyIndex] != nullptr)

@@ -32,11 +32,11 @@ AEnemyBase::AEnemyBase()
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true); 
 	//GetCapsuleComponent()->SetSimulatePhysics(true); 
 	//GetCapsuleComponent()->SetEnableGravity(false); 
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemyBase::OnHit);
 
 	GetMesh()->SetCollisionProfileName("NoCollision"); 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemyBase::OnHit); 
 	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
 	//SetReplicates(true)
 	//SetReplicatesMovement(true);
@@ -45,24 +45,33 @@ AEnemyBase::AEnemyBase()
 
 	//TODO: Have enemies take damage
 	SetCanBeDamaged(true);
-	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
+
 
 	//TODO: @Vanessa Add a noise emitter to enemy and make it so the tower is instigated by by the enemy's noise emitter. Sense the player and generator with Pawn Sensing.  
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
+
 	//SetMakeNoiseDelegate();
 	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
 
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>("Pawn Sensor");
+	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
+
 	PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBase::OnPawnSeen);
+
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
 {
-	check(wayMan && "Waypoint Manager was null");
-
-	if (wayMan)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		m_WaypointManager = wayMan;
+		check(wayMan && "Waypoint Manager was null");
+
+		if (wayMan)
+		{
+			m_WaypointManager = wayMan;
+		}
 	}
 }
 
@@ -74,21 +83,31 @@ void AEnemyBase::BeginPlay()
 	//MakeNoise(1.0f, this, GetActorLocation());
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
 
-	TArray<AActor*> roundManagers; 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoundManager::StaticClass(), roundManagers);
-
-	m_RoundManager = Cast<ARoundManager>(roundManagers[0]); 
-
-	//TODO: check that there is no more than one Round Manager. 
-
-	if (m_WaypointManager == nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		FindWaypointManager();
+		//Couldn't add delegates here
 	}
 
-	if (EnemyData.m_EnemyMesh != nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
+
+		TArray<AActor*> roundManagers;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoundManager::StaticClass(), roundManagers);
+
+		m_RoundManager = Cast<ARoundManager>(roundManagers[0]);
+
+		//TODO: check that there is no more than one Round Manager. 
+
+		if (m_WaypointManager == nullptr)
+		{
+			FindWaypointManager();
+		}
+
+		if (EnemyData.m_EnemyMesh != nullptr)
+		{
+			GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
+		}
+
 	}
 }
 
@@ -116,47 +135,48 @@ void AEnemyBase::FindWaypointManager()
 
 void AEnemyBase::GetNewWaypoint()
 {
-
-	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
-	check(m_WaypointManager && "Waypoint manager was null");
-
-	//check(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()));
-
-	if (m_TargetWaypoint != nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		//Set the old waypoint to Not Taken
-		m_TargetWaypoint->SetIsWaypointTaken(false);
-	}
+		//TODO: Networking - GetLocalRole() == ROLE_Authority ??
+		check(m_WaypointManager && "Waypoint manager was null");
 
-	//TODO(Anyone): This will work for looping through.  But when we get to the generator it will need to be refactored
-	if (m_WaypointManager)
-	{
-		check(m_WaypointManager->GetWaypointGroupSize() != 0);
-
-		if (m_TargetWaypoint == nullptr || m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
-		{
-			m_CurrentWaypointGroup = 0;
-			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
-		}
-		else
-		{
-			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
-		}
+		//check(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()));
 
 		if (m_TargetWaypoint != nullptr)
 		{
-			m_TargetWaypoint->SetIsWaypointTaken(true);
-			IncrementCurrentWaypointGroup();
-			UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
+			//Set the old waypoint to Not Taken
+			m_TargetWaypoint->SetIsWaypointTaken(false);
+		}
+
+		//TODO(Anyone): This will work for looping through.  But when we get to the generator it will need to be refactored
+		if (m_WaypointManager)
+		{
+			check(m_WaypointManager->GetWaypointGroupSize() != 0);
+
+			if (m_TargetWaypoint == nullptr || m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
+			{
+				m_CurrentWaypointGroup = 0;
+				m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
+			}
+			else
+			{
+				m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
+			}
+
+			if (m_TargetWaypoint != nullptr)
+			{
+				m_TargetWaypoint->SetIsWaypointTaken(true);
+				IncrementCurrentWaypointGroup();
+				UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
+			}
+		}
+
+		if (m_TargetWaypoint == nullptr)
+		{
+			//If we didn't find a point in the next group we fall back
+			DecrementCurrentWaypointGroup();
 		}
 	}
-
-	if (m_TargetWaypoint == nullptr)
-	{
-		//If we didn't find a point in the next group we fall back
-		DecrementCurrentWaypointGroup();
-	}
-
 }
 
 // Called every frame
@@ -168,10 +188,12 @@ void AEnemyBase::Tick(float DeltaTime)
 	MakeNoise(6.0f, this, GetActorLocation());
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
 
-
-	if (m_WaypointManager == nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		FindWaypointManager();
+		if (m_WaypointManager == nullptr)
+		{
+			FindWaypointManager();
+		}
 	}
 
 	if (m_TargetWaypoint != nullptr)

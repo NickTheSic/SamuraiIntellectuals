@@ -9,6 +9,7 @@
 #include "../UI/TowerShopMenu.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AShopCameraPawn::AShopCameraPawn()
@@ -24,6 +25,9 @@ AShopCameraPawn::AShopCameraPawn()
 
 	bIsActiveInShop = false;
 	m_PlaceableTower = nullptr;
+
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 void AShopCameraPawn::SetPlaceableObject(ATowerBase * newTower)
@@ -80,15 +84,16 @@ void AShopCameraPawn::OnClickPlaceObject()
 
 			FTransform transform(hit.ImpactPoint);
 
-			FActorSpawnParameters spawnParams;
+			//FActorSpawnParameters spawnParams;
 
-			ATowerBase* ref = world->SpawnActor<ATowerBase>(tower, transform, spawnParams);
+			//ATowerBase* ref = world->SpawnActor<ATowerBase>(tower, transform, spawnParams);
 
-			//I have to set the data to the actual towers data
-			ref->SetShopData(m_PlaceableTower->GetShopData());
-			ref->SetIsInShop(false); //Now that it is puchased and in the world it isn't in the shop
-			ref->m_TowerData = m_PlaceableTower->m_TowerData;
-			ref->InitializeTower();
+			////I have to set the data to the actual towers data
+			//ref->SetShopData(m_PlaceableTower->GetShopData());
+			//ref->SetIsInShop(false); //Now that it is puchased and in the world it isn't in the shop
+			//ref->m_TowerData = m_PlaceableTower->m_TowerData;
+			//ref->InitializeTower();
+			ServerPlaceObject(tower, transform, m_PlaceableTower);
 
 			//Update the Menu with the new money we have and deactivate the buttons if we don't have enough
 			pc->GetTowerShopMenu()->UpdateShopList();
@@ -96,47 +101,72 @@ void AShopCameraPawn::OnClickPlaceObject()
 	}
 }
 
+void AShopCameraPawn::ServerPlaceObject_Implementation(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		FActorSpawnParameters spawnParams;
+
+		ATowerBase* ref = GetWorld()->SpawnActor<ATowerBase>(tower, transform, spawnParams);
+
+		//I have to set the data to the actual towers data
+		ref->SetShopData(placeableTower->GetShopData());
+		ref->SetIsInShop(false); //Now that it is puchased and in the world it isn't in the shop
+		ref->m_TowerData = placeableTower->m_TowerData;
+		ref->InitializeTower();
+	}
+}
+
 bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 {
-	//TODO:  CheckCanPlaceMouse function
-	//Cast a ray under the mouse cursor
-	//If the ray hits a collider that we can place on
+		UWorld* world = GetWorld();
+		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
 
-	UWorld* world = GetWorld();
-	ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
+		//check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
 
-	check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
-		
-	if (world && pc)
-	{
+		if (world && pc && pc->IsLocalPlayerController())
+		{
 
-		FHitResult hit;
-		float xLoc, yLoc;
+			FHitResult hit;
+			float xLoc, yLoc;
 
-		pc->GetMousePosition(xLoc, yLoc);
-		FVector Start(xLoc, yLoc, GetActorLocation().Z);
-		FVector Direction; 
-		pc->DeprojectMousePositionToWorld(Start, Direction);
-		FVector End = Start;
-		End.Z -= (GetActorLocation().Z - m_TrenchDepth);
+			pc->GetMousePosition(xLoc, yLoc);
+			FVector Start(xLoc, yLoc, GetActorLocation().Z);
+			FVector Direction;
+			pc->DeprojectMousePositionToWorld(Start, Direction);
+			FVector End = Start;
+			End.Z -= (GetActorLocation().Z - m_TrenchDepth);
 
-		FCollisionQueryParams FCQP;
-		FCQP.AddIgnoredActor(this);
+			FCollisionQueryParams FCQP;
+			FCQP.AddIgnoredActor(this);
 
-		//DrawDebugLine(world, Start, End, FColor::Cyan, true);
+			//DrawDebugLine(world, Start, End, FColor::Cyan, true);
 
-		return world->LineTraceSingleByObjectType(hit, Start, End, FCollisionObjectQueryParams::AllObjects, FCQP);
-	}
-
+			return world->LineTraceSingleByObjectType(hit, Start, End, FCollisionObjectQueryParams::AllObjects, FCQP);
+		}
+	
 	return false;
 }
 
-void AShopCameraPawn::EnteringShop()
+bool AShopCameraPawn::EnteringShop_Validate()
+{
+	return true;
+}
+
+bool AShopCameraPawn::ExitingShop_Validate()
+{
+	return true;
+}
+
+void AShopCameraPawn::EnteringShop_Implementation()
 {
 	//TODO: Setup all the defaults for entering a shop
-	bIsActiveInShop = true;
-	m_PlaceableTower = nullptr;
-	bCanPlaceTower = false;
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		bIsActiveInShop = true;
+		m_PlaceableTower = nullptr;
+		bCanPlaceTower = false;
+	}
 }
 
 void AShopCameraPawn::MoveUp(float val)
@@ -164,12 +194,15 @@ void AShopCameraPawn::Zoom(float val)
 
 }
 
-void AShopCameraPawn::ExitingShop()
+void AShopCameraPawn::ExitingShop_Implementation()
 {
-	//TODO: Setup all defaults for exiting the shop
-	bIsActiveInShop = false;
-	m_PlaceableTower = nullptr;
-	bCanPlaceTower = false;
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		//TODO: Setup all defaults for exiting the shop
+		bIsActiveInShop = false;
+		m_PlaceableTower = nullptr;
+		bCanPlaceTower = false;
+	}
 }
 
 bool AShopCameraPawn::GetIsActiveInShop()
@@ -200,3 +233,11 @@ void AShopCameraPawn::Tick(float DeltaTime)
 	}
 }
 
+void AShopCameraPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AShopCameraPawn, m_PlaceableTower);
+	DOREPLIFETIME(AShopCameraPawn, bIsActiveInShop);
+	DOREPLIFETIME(AShopCameraPawn, m_TrenchDepth);
+}
