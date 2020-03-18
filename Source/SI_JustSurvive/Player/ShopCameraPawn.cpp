@@ -167,7 +167,7 @@ bool AShopCameraPawn::ExitingShop_Validate()
 void AShopCameraPawn::EnteringShop_Implementation()
 {
 	//TODO: Setup all the defaults for entering a shop
-	//if (GetLocalRole() == ROLE_Authority)
+	if (GetLocalRole() == ROLE_Authority)
 	{
 		bIsActiveInShop = true;
 		m_PlaceableTower = nullptr;
@@ -202,7 +202,7 @@ void AShopCameraPawn::Zoom(float val)
 
 void AShopCameraPawn::ExitingShop_Implementation()
 {
-	//if (GetLocalRole() == ROLE_Authority)
+	if (GetLocalRole() == ROLE_Authority)
 	{
 		//TODO: Setup all defaults for exiting the shop
 		bIsActiveInShop = false;
