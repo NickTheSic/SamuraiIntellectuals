@@ -127,7 +127,8 @@ void ASI_PlayerController::EnterTowerShopMenu()
 
 		OnPossess(newPawn);
 		
-		camPawn->EnteringShop();
+		camPawn->SetOwner(this);
+		camPawn->cEnteringShop();
 		
 	}
 }
@@ -136,12 +137,11 @@ void ASI_PlayerController::ExitTowerShopMenu()
 {
 	if (IsLocalPlayerController())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Exiting the TowerShop Menu");
-
 		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
 		if (camPawn)
 		{
 			camPawn->ExitingShop();
+			camPawn->SetOwner(nullptr);
 		}
 
 		OnUnPossess();
@@ -153,7 +153,6 @@ void ASI_PlayerController::ExitTowerShopMenu()
 			MyTowerHud->RemoveFromViewport();
 			bShowMouseCursor = false;
 		}
-
 
 		if (MyOwningCharacter != nullptr)
 			MyOwningCharacter->StopInteraction(); //TODO: I think this could be cleaner - Nick
