@@ -9,19 +9,29 @@
 #include "Kismet/GameplayStatics.h"
 #include "ShopCameraPawn.h"
 #include "Blueprint/UserWidget.h"
+#include "Net/UnrealNetwork.h"
+
+ASI_PlayerController::ASI_PlayerController()
+{
+	SetReplicates(true);
+}
 
 void ASI_PlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
-	check(aPawn != nullptr && "The pawn was null");
-
-	//If it is a character pawn and our member pawn is null set it to the passed in pawn
-	if (MyOwningCharacter == nullptr)
+	//if (IsLocalController())
 	{
-		if (ASI_JustSurviveCharacter* Char = Cast<ASI_JustSurviveCharacter>(aPawn))
+
+		check(aPawn != nullptr && "The pawn was null");
+
+		//If it is a character pawn and our member pawn is null set it to the passed in pawn
+		if (MyOwningCharacter == nullptr)
 		{
-			MyOwningCharacter = Char;
+			if (ASI_JustSurviveCharacter* Char = Cast<ASI_JustSurviveCharacter>(aPawn))
+			{
+				MyOwningCharacter = Char;
+			}
 		}
 	}
 }
@@ -63,19 +73,48 @@ void ASI_PlayerController::SetupInputComponent()
 
 }
 
+
 void ASI_PlayerController::EnterTowerShopMenu()
 {
 	if (IsLocalPlayerController())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Entering the TowerShop Menu");
+		//Hopefully gets the pawn
+		if (MyOwningCharacter == nullptr) MyOwningCharacter = Cast<ASI_JustSurviveCharacter>(GetPawn());
 
-		//Stop interacting with the character - due to how it is currently setup
+		TArray<AActor*> CameraPawnArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
+		APawn* newPawn = nullptr;
+		AShopCameraPawn* camPawn = nullptr;
+
+		for (int i = 0; i < CameraPawnArray.Num(); i++)
+		{
+			camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
+			if (camPawn)
+			{
+				if (camPawn->GetIsActiveInShop() == false)
+				{
+					//camPawn->ServerEnteringShop();
+					newPawn = Cast<APawn>(camPawn);
+					break;
+				}
+			}
+		}
+
+		//TODO: we will have to check if we succesfully entered the shop
+		check(newPawn && "New Pawn was Nullptr trying to possess"); //Probably forgot to add CameraPawns to the scene
+
+		//Entering Shop Failed
+		if (newPawn == nullptr) {
+			check(false && "Entering Shop Failed"); 
+			return;
+		}
+
 		if (MyOwningCharacter != nullptr)
 			MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
 
 		check(MyTowerHud && "The hud was a nullptr")
 
-			OnUnPossess();
+		OnUnPossess();
 		FInputModeGameAndUI UUInput;
 		SetInputMode(UUInput);
 
@@ -86,42 +125,36 @@ void ASI_PlayerController::EnterTowerShopMenu()
 			bShowMouseCursor = true;
 		}
 
-		TArray<AActor*> CameraPawnArray;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
-
-		APawn* newPawn = nullptr;
-
-		for (int i = 0; i < CameraPawnArray.Num(); i++)
-		{
-			AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
-			if (camPawn)
-			{
-				if (camPawn->GetIsActiveInShop() == false)
-				{
-					camPawn->EnteringShop();
-					newPawn = Cast<APawn>(camPawn);
-					break;
-				}
-			}
-		}
-
-		//TODO: we will have to check if we succesfully entered the shop
-		check(newPawn && "New Pawn was Nullptr trying to possess"); //Probably forgot to add CameraPawns to the scene
-
-		newPawn == nullptr ? Possess(MyOwningCharacter) : Possess(newPawn);
+		OnPossess(newPawn);
+		
+		camPawn->SetOwner(this);
+		
+		//camPawn->cEnteringShop();
+		ServerCallEnterShop(camPawn);
+		
 	}
+}
+
+void ASI_PlayerController::ServerCallEnterShop_Implementation(AShopCameraPawn* camPawn)
+{
+		camPawn->EnteringShop();
+}
+
+void ASI_PlayerController::ServerExitShop_Implementation(AShopCameraPawn* camPawn)
+{
+		camPawn->ExitingShop();
 }
 
 void ASI_PlayerController::ExitTowerShopMenu()
 {
 	if (IsLocalPlayerController())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Exiting the TowerShop Menu");
-
 		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
 		if (camPawn)
 		{
-			camPawn->ExitingShop();
+			//camPawn->ExitingShop();
+			ServerExitShop(camPawn);
+			camPawn->SetOwner(nullptr);
 		}
 
 		OnUnPossess();
@@ -133,7 +166,6 @@ void ASI_PlayerController::ExitTowerShopMenu()
 			MyTowerHud->RemoveFromViewport();
 			bShowMouseCursor = false;
 		}
-
 
 		if (MyOwningCharacter != nullptr)
 			MyOwningCharacter->StopInteraction(); //TODO: I think this could be cleaner - Nick
@@ -349,4 +381,12 @@ void ASI_PlayerController::ControllerForMouseUp()
 		TSharedPtr<FGenericWindow> GenWindow;
 		SlateApp.ProcessMouseButtonUpEvent(MouseUpEvent);
 	}
+}
+
+void ASI_PlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASI_PlayerController, MyOwningCharacter);
+
 }

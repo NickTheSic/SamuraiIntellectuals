@@ -20,6 +20,9 @@ void ARoundManager::BeginPlay()
 
     ResetRoundManagerData(); 
  
+    if (GetLocalRole() != ROLE_Authority)
+        return;
+
 	if (m_Waves.Num() > 0)
 	{
 		if (GetWorld() != nullptr)
@@ -35,6 +38,9 @@ void ARoundManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    if (GetLocalRole() != ROLE_Authority)
+        return;
+
     if (m_WaveIndex < m_Waves.Num())
     {
         m_Waves[m_WaveIndex]->GetDefaultObject<AWave>()->Tick(DeltaTime);
@@ -44,6 +50,9 @@ void ARoundManager::Tick(float DeltaTime)
 
 void ARoundManager::RemoveEnemy()
 {
+    if (GetLocalRole() != ROLE_Authority)
+        return;
+
 	if (m_ActiveEnemiesInCurrentWave > 0)
 	{
 		m_ActiveEnemiesInCurrentWave--; 
@@ -88,6 +97,9 @@ void ARoundManager::ResetRoundManagerData()
 
 void ARoundManager::SpawnNextWave()
 {
+    if (GetLocalRole() != ROLE_Authority)
+        return;
+
     m_ActiveEnemiesInCurrentWave = GetNumEnemies();
 
     m_Waves[m_WaveIndex]->GetDefaultObject<AWave>()->SetWorld(GetWorld());
