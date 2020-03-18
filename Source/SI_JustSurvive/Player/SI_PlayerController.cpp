@@ -128,9 +128,21 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		OnPossess(newPawn);
 		
 		camPawn->SetOwner(this);
-		camPawn->cEnteringShop();
+		
+		//camPawn->cEnteringShop();
+		ServerCallEnterShop(camPawn);
 		
 	}
+}
+
+void ASI_PlayerController::ServerCallEnterShop_Implementation(AShopCameraPawn* camPawn)
+{
+		camPawn->EnteringShop();
+}
+
+void ASI_PlayerController::ServerExitShop_Implementation(AShopCameraPawn* camPawn)
+{
+		camPawn->ExitingShop();
 }
 
 void ASI_PlayerController::ExitTowerShopMenu()
@@ -140,7 +152,8 @@ void ASI_PlayerController::ExitTowerShopMenu()
 		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
 		if (camPawn)
 		{
-			camPawn->ExitingShop();
+			//camPawn->ExitingShop();
+			ServerExitShop(camPawn);
 			camPawn->SetOwner(nullptr);
 		}
 

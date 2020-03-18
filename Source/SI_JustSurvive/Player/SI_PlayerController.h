@@ -45,9 +45,15 @@ public:
 
 
 	//I'll make this public for now
+	UFUNCTION(Server, Reliable)
+		void ServerCallEnterShop(AShopCameraPawn* camPawn);
+
 	void EnterTowerShopMenu(); //Called on button press
 
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	UFUNCTION(Server, Reliable)
+		void ServerExitShop(AShopCameraPawn* camPawn);
+
+	UFUNCTION( BlueprintCallable, Category = "Gameplay")
 		void ExitTowerShopMenu();
 
 	class UTowerShopMenu* GetTowerShopMenu() { return MyTowerHud; };
