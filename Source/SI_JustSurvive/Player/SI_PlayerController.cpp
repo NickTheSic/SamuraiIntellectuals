@@ -74,6 +74,26 @@ void ASI_PlayerController::SetupInputComponent()
 }
 
 
+void ASI_PlayerController::GetServerShopPawn_Implementation(APawn* newPawn, AShopCameraPawn* camPawn)
+{
+	TArray<AActor*> CameraPawnArray;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
+
+	for (int i = 0; i < CameraPawnArray.Num(); i++)
+	{
+		camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
+		if (camPawn)
+		{
+			if (camPawn->GetIsActiveInShop() == false)
+			{
+				//camPawn->ServerEnteringShop();
+				newPawn = Cast<APawn>(camPawn);
+				break;
+			}
+		}
+	}
+}
+
 void ASI_PlayerController::EnterTowerShopMenu()
 {
 	if (IsLocalPlayerController())
@@ -86,7 +106,9 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		APawn* newPawn = nullptr;
 		AShopCameraPawn* camPawn = nullptr;
 
-		for (int i = 0; i < CameraPawnArray.Num(); i++)
+		//GetServerShopPawn(newPawn, camPawn);
+
+		 for (int i = 0; i < CameraPawnArray.Num(); i++)
 		{
 			camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
 			if (camPawn)
@@ -110,7 +132,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		}
 
 		if (MyOwningCharacter != nullptr)
-			MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
+			MyOwningCharacter->StopInteraction(); //TODO: Make sure this doesn't cause issues while networking
 
 		check(MyTowerHud && "The hud was a nullptr")
 
@@ -126,12 +148,12 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		}
 
 		OnPossess(newPawn);
+
+		MyActiveCamera = camPawn;
 		
 		camPawn->SetOwner(this);
 		
-		//camPawn->cEnteringShop();
 		ServerCallEnterShop(camPawn);
-		
 	}
 }
 
@@ -160,6 +182,7 @@ void ASI_PlayerController::ExitTowerShopMenu()
 			//camPawn->ExitingShop();
 			ServerExitShop(camPawn);
 			camPawn->SetOwner(nullptr);
+			MyActiveCamera = nullptr;
 		}
 
 		OnUnPossess();
@@ -393,5 +416,6 @@ void ASI_PlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASI_PlayerController, MyOwningCharacter);
+	DOREPLIFETIME(ASI_PlayerController, MyActiveCamera);
 
 }

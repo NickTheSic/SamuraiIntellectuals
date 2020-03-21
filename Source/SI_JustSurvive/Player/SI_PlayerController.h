@@ -20,6 +20,9 @@ protected:
 	UPROPERTY(Replicated)
 	class ASI_JustSurviveCharacter* MyOwningCharacter = nullptr; 
 
+	UPROPERTY(Replicated)
+		class AShopCameraPawn* MyActiveCamera = nullptr;
+
 	//The tower menu for the player
     UPROPERTY()
 	class UTowerShopMenu* MyTowerHud = nullptr; 
@@ -40,6 +43,9 @@ public:
 	//The base functions that we need
 	void OnPossess(class APawn* aPawn) override;
 	void OnUnPossess() override;
+
+	UFUNCTION(Server, Reliable)
+		void GetServerShopPawn(APawn* newPawn, AShopCameraPawn* camPawn);
 
 	void SetupInputComponent() override;
 

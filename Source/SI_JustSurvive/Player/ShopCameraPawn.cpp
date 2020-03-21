@@ -222,8 +222,9 @@ void AShopCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//TODO: (Nick)  This is a hack, hopefully it works but also need to find a way around it
-	SetRole(ROLE_Authority);
+	//Check them here just to be sure
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 // Called every frame
@@ -237,7 +238,7 @@ void AShopCameraPawn::Tick(float DeltaTime)
 		bCanPlaceTower = CheckCanPlaceUnderMouse();
 		if (bCanPlaceTower)
 		{
-			int b = 0;
+			
 		}
 	}
 }

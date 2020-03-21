@@ -50,8 +50,8 @@ void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location,
 		return;
 	}
 
-	FString message = TEXT("Saw Actor") + NoiseInstigator->GetName();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
+	//FString message = TEXT("Saw Actor") + NoiseInstigator->GetName();
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
 
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Green, false, 10.0f);
 
