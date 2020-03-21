@@ -93,7 +93,8 @@ void AShopCameraPawn::OnClickPlaceObject()
 			//ref->SetIsInShop(false); //Now that it is puchased and in the world it isn't in the shop
 			//ref->m_TowerData = m_PlaceableTower->m_TowerData;
 			//ref->InitializeTower();
-			ServerPlaceObject(tower, transform, m_PlaceableTower);
+			//ServerPlaceObject(tower, transform, m_PlaceableTower);
+			pc->PlaceTower(this, tower, transform, m_PlaceableTower);
 
 			//Update the Menu with the new money we have and deactivate the buttons if we don't have enough
 			pc->GetTowerShopMenu()->UpdateShopList();

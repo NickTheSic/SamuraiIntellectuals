@@ -135,6 +135,11 @@ void ASI_PlayerController::EnterTowerShopMenu()
 	}
 }
 
+void ASI_PlayerController::ServerPlaceTower_Implementation(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+{
+	camPawn->ServerPlaceObject(tower, transform, placeableTower);
+}
+
 void ASI_PlayerController::ServerCallEnterShop_Implementation(AShopCameraPawn* camPawn)
 {
 		camPawn->EnteringShop();

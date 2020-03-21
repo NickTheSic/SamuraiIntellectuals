@@ -26,6 +26,8 @@ ATowerBase::ATowerBase()
 
 	m_TowerData.m_FireRate = 1.5f;
 	
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 void ATowerBase::BeginPlay()
@@ -67,6 +69,9 @@ void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location,
 
 void ATowerBase::ShootProjectile()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
 	if (m_ProjectileTemplate)
 	{
 		bCanShoot = true;
