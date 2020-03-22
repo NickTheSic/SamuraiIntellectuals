@@ -77,16 +77,7 @@ void AShopCameraPawn::OnClickPlaceObject()
 
 			FTransform transform(hit.ImpactPoint);
 
-			//FActorSpawnParameters spawnParams;
-
-			//ATowerBase* ref = world->SpawnActor<ATowerBase>(tower, transform, spawnParams);
-
-			////I have to set the data to the actual towers data
-			//ref->SetShopData(m_PlaceableTower->GetShopData());
-			//ref->SetIsInShop(false); //Now that it is puchased and in the world it isn't in the shop
-			//ref->m_TowerData = m_PlaceableTower->m_TowerData;
-			//ref->InitializeTower();
-			//ServerPlaceObject(tower, transform, m_PlaceableTower);
+			//Pass it to the playercontroller since it is on the server
 			pc->PlaceTower(this, tower, transform, m_PlaceableTower);
 
 			//Update the Menu with the new money we have and deactivate the buttons if we don't have enough
@@ -116,9 +107,8 @@ bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 		UWorld* world = GetWorld();
 		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
 
+		//The trench depth should be set
 		check(m_TrenchDepth != 0.0f && "The trench depth might not've been set, will not work");
-
-		//check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
 
 		if (world && pc && pc->IsLocalPlayerController())
 		{
@@ -142,12 +132,6 @@ bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 		}
 	
 	return false;
-}
-
-void AShopCameraPawn::cEnteringShop()
-{
-	EnteringShop();
-	bIsActiveInShop = true;
 }
 
 bool AShopCameraPawn::EnteringShop_Validate()
@@ -218,8 +202,8 @@ void AShopCameraPawn::BeginPlay()
 	Super::BeginPlay();
 	
 	//Check them here just to be sure
-	SetReplicates(true);
-	SetReplicateMovement(true);
+	//SetReplicates(true);
+	//SetReplicateMovement(true);
 }
 
 // Called every frame
@@ -227,15 +211,6 @@ void AShopCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//I Only want to cast a ray if we are in the shop with a tower selected
-	//if (bIsActiveInShop == true && m_PlaceableTower != nullptr)
-	{
-		//bCanPlaceTower = CheckCanPlaceUnderMouse();
-		//if (bCanPlaceTower)
-		{
-			
-		}
-	}
 }
 
 void AShopCameraPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

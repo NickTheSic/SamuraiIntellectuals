@@ -41,9 +41,6 @@ public:
 	void OnPossess(class APawn* aPawn) override;
 	void OnUnPossess() override;
 
-	UFUNCTION(Server, Reliable)
-		void GetServerShopPawn(APawn* newPawn, AShopCameraPawn* camPawn);
-
 	void SetupInputComponent() override;
 
 	UFUNCTION(Server, Reliable)

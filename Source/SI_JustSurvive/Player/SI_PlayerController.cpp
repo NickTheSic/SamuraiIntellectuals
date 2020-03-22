@@ -73,27 +73,6 @@ void ASI_PlayerController::SetupInputComponent()
 
 }
 
-
-void ASI_PlayerController::GetServerShopPawn_Implementation(APawn* newPawn, AShopCameraPawn* camPawn)
-{
-	TArray<AActor*> CameraPawnArray;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
-
-	for (int i = 0; i < CameraPawnArray.Num(); i++)
-	{
-		camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
-		if (camPawn)
-		{
-			if (camPawn->GetIsActiveInShop() == false)
-			{
-				//camPawn->ServerEnteringShop();
-				newPawn = Cast<APawn>(camPawn);
-				break;
-			}
-		}
-	}
-}
-
 void ASI_PlayerController::EnterTowerShopMenu()
 {
 	if (IsLocalPlayerController())
@@ -105,8 +84,6 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShopCameraPawn::StaticClass(), CameraPawnArray);
 		APawn* newPawn = nullptr;
 		AShopCameraPawn* camPawn = nullptr;
-
-		//GetServerShopPawn(newPawn, camPawn);
 
 		 for (int i = 0; i < CameraPawnArray.Num(); i++)
 		{
@@ -158,10 +135,6 @@ void ASI_PlayerController::EnterTowerShopMenu()
 void ASI_PlayerController::ServerPlaceTower_Implementation(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
 {
 	camPawn->ServerPlaceObject(tower, transform, placeableTower);
-	//if (AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn()))
-	//{
-	//	camPawn->ServerPlaceObject(tower, transform, placeableTower);
-	//}
 }
 
 void ASI_PlayerController::ServerCallEnterShop_Implementation(AShopCameraPawn* camPawn)
@@ -181,7 +154,6 @@ void ASI_PlayerController::ExitTowerShopMenu()
 		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
 		if (camPawn)
 		{
-			//camPawn->ExitingShop();
 			ServerExitShop(camPawn);
 			camPawn->SetOwner(nullptr);
 		}

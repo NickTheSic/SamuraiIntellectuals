@@ -45,8 +45,6 @@ public:
 	//TODO: Add a function that changes the mouse cursor colour if we can't place it
 	bool  CheckCanPlaceUnderMouse();
 	
-	void cEnteringShop();
-
 	UFUNCTION(Server, Reliable, WithValidation)
 	void EnteringShop();
 
