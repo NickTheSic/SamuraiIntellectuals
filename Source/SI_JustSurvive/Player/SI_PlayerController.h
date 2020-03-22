@@ -20,9 +20,6 @@ protected:
 	UPROPERTY(Replicated)
 	class ASI_JustSurviveCharacter* MyOwningCharacter = nullptr; 
 
-	UPROPERTY(Replicated)
-		class AShopCameraPawn* MyActiveCamera = nullptr;
-
 	//The tower menu for the player
     UPROPERTY()
 	class UTowerShopMenu* MyTowerHud = nullptr; 

@@ -34,7 +34,7 @@ public:
 	void OnClickPlaceObject();
 
 	//TODO: Nick - See if I can rearrange this function
-	UFUNCTION(Server, Reliable)
+	//UFUNCTION(Server, Reliable)
 		void ServerPlaceObject(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower);
 
 	void MoveUp(float val);

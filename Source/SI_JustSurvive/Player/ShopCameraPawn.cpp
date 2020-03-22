@@ -38,22 +38,15 @@ void AShopCameraPawn::SetPlaceableObject(ATowerBase * newTower)
 
 void AShopCameraPawn::OnClickPlaceObject()
 {
-	if (m_PlaceableTower != nullptr && bCanPlaceTower)
+	//if (m_PlaceableTower != nullptr && bCanPlaceTower)
+	if (CheckCanPlaceUnderMouse())
 	{
-		//TODO: OnCLickPLaceObject function
-		//if (PlaceableTower->Purchase( Getplayer controller or player state ))
-		//{
-		//Cast a ray to place an instance of the PlaceableTower
-		//
-		//}
 
 		UWorld* world = GetWorld();
 		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
 
 		check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
-
-		//We check if we can purchase the item
-		//If we can, then we can place it from here instead of within the TowerBase
+		
 		bool didPurchase = m_PlaceableTower->Purchase(pc);
 
 		if (!didPurchase)
@@ -102,7 +95,7 @@ void AShopCameraPawn::OnClickPlaceObject()
 	}
 }
 
-void AShopCameraPawn::ServerPlaceObject_Implementation(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+void AShopCameraPawn::ServerPlaceObject(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
 {
 	if (GetLocalRole() == ROLE_Authority)
 	{
@@ -122,6 +115,8 @@ bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 {
 		UWorld* world = GetWorld();
 		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
+
+		check(m_TrenchDepth != 0.0f && "The trench depth might not've been set, will not work");
 
 		//check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
 
@@ -233,10 +228,10 @@ void AShopCameraPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//I Only want to cast a ray if we are in the shop with a tower selected
-	if (bIsActiveInShop == true && m_PlaceableTower != nullptr)
+	//if (bIsActiveInShop == true && m_PlaceableTower != nullptr)
 	{
-		bCanPlaceTower = CheckCanPlaceUnderMouse();
-		if (bCanPlaceTower)
+		//bCanPlaceTower = CheckCanPlaceUnderMouse();
+		//if (bCanPlaceTower)
 		{
 			
 		}

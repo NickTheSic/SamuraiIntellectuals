@@ -148,8 +148,6 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		}
 
 		OnPossess(newPawn);
-
-		MyActiveCamera = camPawn;
 		
 		camPawn->SetOwner(this);
 		
@@ -160,6 +158,10 @@ void ASI_PlayerController::EnterTowerShopMenu()
 void ASI_PlayerController::ServerPlaceTower_Implementation(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
 {
 	camPawn->ServerPlaceObject(tower, transform, placeableTower);
+	//if (AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn()))
+	//{
+	//	camPawn->ServerPlaceObject(tower, transform, placeableTower);
+	//}
 }
 
 void ASI_PlayerController::ServerCallEnterShop_Implementation(AShopCameraPawn* camPawn)
@@ -182,7 +184,6 @@ void ASI_PlayerController::ExitTowerShopMenu()
 			//camPawn->ExitingShop();
 			ServerExitShop(camPawn);
 			camPawn->SetOwner(nullptr);
-			MyActiveCamera = nullptr;
 		}
 
 		OnUnPossess();
@@ -416,6 +417,5 @@ void ASI_PlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASI_PlayerController, MyOwningCharacter);
-	DOREPLIFETIME(ASI_PlayerController, MyActiveCamera);
 
 }
