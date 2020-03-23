@@ -73,7 +73,6 @@ void ASI_PlayerController::SetupInputComponent()
 
 }
 
-
 void ASI_PlayerController::EnterTowerShopMenu()
 {
 	if (IsLocalPlayerController())
@@ -86,7 +85,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		APawn* newPawn = nullptr;
 		AShopCameraPawn* camPawn = nullptr;
 
-		for (int i = 0; i < CameraPawnArray.Num(); i++)
+		 for (int i = 0; i < CameraPawnArray.Num(); i++)
 		{
 			camPawn = Cast<AShopCameraPawn>(CameraPawnArray[i]);
 			if (camPawn)
@@ -110,7 +109,7 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		}
 
 		if (MyOwningCharacter != nullptr)
-			MyOwningCharacter->StopInteraction(); //TODO: Makle sure this doesn't cause issues while networking
+			MyOwningCharacter->StopInteraction(); //TODO: Make sure this doesn't cause issues while networking
 
 		check(MyTowerHud && "The hud was a nullptr")
 
@@ -129,10 +128,13 @@ void ASI_PlayerController::EnterTowerShopMenu()
 		
 		camPawn->SetOwner(this);
 		
-		//camPawn->cEnteringShop();
 		ServerCallEnterShop(camPawn);
-		
 	}
+}
+
+void ASI_PlayerController::ServerPlaceTower_Implementation(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+{
+	camPawn->ServerPlaceObject(tower, transform, placeableTower);
 }
 
 void ASI_PlayerController::ServerCallEnterShop_Implementation(AShopCameraPawn* camPawn)
@@ -152,7 +154,6 @@ void ASI_PlayerController::ExitTowerShopMenu()
 		AShopCameraPawn* camPawn = Cast<AShopCameraPawn>(GetPawn());
 		if (camPawn)
 		{
-			//camPawn->ExitingShop();
 			ServerExitShop(camPawn);
 			camPawn->SetOwner(nullptr);
 		}

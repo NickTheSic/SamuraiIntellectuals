@@ -38,22 +38,15 @@ void AShopCameraPawn::SetPlaceableObject(ATowerBase * newTower)
 
 void AShopCameraPawn::OnClickPlaceObject()
 {
-	if (m_PlaceableTower != nullptr && bCanPlaceTower)
+	//if (m_PlaceableTower != nullptr && bCanPlaceTower)
+	if (CheckCanPlaceUnderMouse())
 	{
-		//TODO: OnCLickPLaceObject function
-		//if (PlaceableTower->Purchase( Getplayer controller or player state ))
-		//{
-		//Cast a ray to place an instance of the PlaceableTower
-		//
-		//}
 
 		UWorld* world = GetWorld();
 		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
 
 		check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
-
-		//We check if we can purchase the item
-		//If we can, then we can place it from here instead of within the TowerBase
+		
 		bool didPurchase = m_PlaceableTower->Purchase(pc);
 
 		if (!didPurchase)
@@ -84,16 +77,8 @@ void AShopCameraPawn::OnClickPlaceObject()
 
 			FTransform transform(hit.ImpactPoint);
 
-			//FActorSpawnParameters spawnParams;
-
-			//ATowerBase* ref = world->SpawnActor<ATowerBase>(tower, transform, spawnParams);
-
-			////I have to set the data to the actual towers data
-			//ref->SetShopData(m_PlaceableTower->GetShopData());
-			//ref->SetIsInShop(false); //Now that it is puchased and in the world it isn't in the shop
-			//ref->m_TowerData = m_PlaceableTower->m_TowerData;
-			//ref->InitializeTower();
-			ServerPlaceObject(tower, transform, m_PlaceableTower);
+			//Pass it to the playercontroller since it is on the server
+			pc->PlaceTower(this, tower, transform, m_PlaceableTower);
 
 			//Update the Menu with the new money we have and deactivate the buttons if we don't have enough
 			pc->GetTowerShopMenu()->UpdateShopList();
@@ -101,7 +86,7 @@ void AShopCameraPawn::OnClickPlaceObject()
 	}
 }
 
-void AShopCameraPawn::ServerPlaceObject_Implementation(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+void AShopCameraPawn::ServerPlaceObject(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
 {
 	if (GetLocalRole() == ROLE_Authority)
 	{
@@ -122,7 +107,8 @@ bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 		UWorld* world = GetWorld();
 		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
 
-		//check(world && pc && "One of these returned a nullptr and I am not sure why we would have this issue"); //Nick wrote this
+		//The trench depth should be set
+		check(m_TrenchDepth != 0.0f && "The trench depth might not've been set, will not work");
 
 		if (world && pc && pc->IsLocalPlayerController())
 		{
@@ -146,12 +132,6 @@ bool AShopCameraPawn::CheckCanPlaceUnderMouse()
 		}
 	
 	return false;
-}
-
-void AShopCameraPawn::cEnteringShop()
-{
-	EnteringShop();
-	bIsActiveInShop = true;
 }
 
 bool AShopCameraPawn::EnteringShop_Validate()
@@ -221,8 +201,9 @@ void AShopCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//TODO: (Nick)  This is a hack, hopefully it works but also need to find a way around it
-	SetRole(ROLE_Authority);
+	//Check them here just to be sure
+	//SetReplicates(true);
+	//SetReplicateMovement(true);
 }
 
 // Called every frame
@@ -230,15 +211,6 @@ void AShopCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//I Only want to cast a ray if we are in the shop with a tower selected
-	if (bIsActiveInShop == true && m_PlaceableTower != nullptr)
-	{
-		bCanPlaceTower = CheckCanPlaceUnderMouse();
-		if (bCanPlaceTower)
-		{
-			int b = 0;
-		}
-	}
 }
 
 void AShopCameraPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

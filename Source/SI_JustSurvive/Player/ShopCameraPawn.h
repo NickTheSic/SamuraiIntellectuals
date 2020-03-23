@@ -34,7 +34,7 @@ public:
 	void OnClickPlaceObject();
 
 	//TODO: Nick - See if I can rearrange this function
-	UFUNCTION(Server, Reliable)
+	//UFUNCTION(Server, Reliable)
 		void ServerPlaceObject(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower);
 
 	void MoveUp(float val);
@@ -45,8 +45,6 @@ public:
 	//TODO: Add a function that changes the mouse cursor colour if we can't place it
 	bool  CheckCanPlaceUnderMouse();
 	
-	void cEnteringShop();
-
 	UFUNCTION(Server, Reliable, WithValidation)
 	void EnteringShop();
 

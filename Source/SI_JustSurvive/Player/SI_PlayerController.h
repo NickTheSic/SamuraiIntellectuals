@@ -43,6 +43,14 @@ public:
 
 	void SetupInputComponent() override;
 
+	UFUNCTION(Server, Reliable)
+		void ServerPlaceTower(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower);
+
+	UFUNCTION()
+		void PlaceTower(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+	{
+		ServerPlaceTower(camPawn, tower, transform, placeableTower);
+	}
 
 	//I'll make this public for now
 	UFUNCTION(Server, Reliable)
