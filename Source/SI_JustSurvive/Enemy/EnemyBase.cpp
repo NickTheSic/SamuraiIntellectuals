@@ -114,6 +114,8 @@ void AEnemyBase::BeginPlay()
 void AEnemyBase::FindWaypointManager()
 {
 	//We only want to do this if the waypoint manager is null
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	if (m_WaypointManager == nullptr)
 	{
 		TArray<AActor*> singleWaypointManager;
@@ -183,6 +185,7 @@ void AEnemyBase::GetNewWaypoint()
 void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (GetLocalRole() != ROLE_Authority) return;
 
 	//test
 	MakeNoise(6.0f, this, GetActorLocation());
@@ -233,6 +236,7 @@ void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 
 void AEnemyBase::OnPawnSeen(APawn* pawn)
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	//Do we want the enemy to make sure we get the player over generator or vice versa
 	if (Cast<ASI_JustSurviveCharacter>(pawn) || Cast<AGeneratorBase>(pawn))
 	{
@@ -266,6 +270,8 @@ void AEnemyBase::OnPawnSeen(APawn* pawn)
 
 void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	float m_DamageAmount = 0;
 	m_DamageAmount = Damage;
 
@@ -280,6 +286,8 @@ void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamage
 
 void AEnemyBase::KillEnemy()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	if (m_TargetWaypoint != nullptr)
 	{
 		//When the enemy dies we want him to give up his waypoint
@@ -293,12 +301,16 @@ void AEnemyBase::KillEnemy()
 
 void AEnemyBase::Shoot()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
     FTimerManager& Timer = GetWorldTimerManager(); 
     Timer.SetTimer(m_EnemyFireTimer, this, &AEnemyBase::SpawnProjectile, m_EnemyFireRate, false, 0.2);
 }
 
 void AEnemyBase::SpawnProjectile()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
     if (ProjectileClass != nullptr)
     {
         UWorld* const World = GetWorld(); 
@@ -328,6 +340,8 @@ void AEnemyBase::ClearShootTimer()
 
 void AEnemyBase::IncrementCurrentWaypointGroup()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	m_CurrentWaypointGroup++;
 
 	if (m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
@@ -339,6 +353,8 @@ void AEnemyBase::IncrementCurrentWaypointGroup()
 
 void AEnemyBase::DecrementCurrentWaypointGroup()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	m_CurrentWaypointGroup--;
 
 	if (m_CurrentWaypointGroup < 0)
