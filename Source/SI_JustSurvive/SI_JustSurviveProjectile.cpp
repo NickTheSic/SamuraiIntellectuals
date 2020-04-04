@@ -6,6 +6,7 @@
 #include "Enemy/EnemyBase.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "GameFramework/DamageType.h"
+#include "Engine/Engine.h"
 
 
 ASI_JustSurviveProjectile::ASI_JustSurviveProjectile() 
@@ -75,3 +76,4 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 		Destroy();		
 	}
 }
+

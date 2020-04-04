@@ -169,6 +169,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		UInventoryComponent* GetInventoryComponent() {return m_InventoryComponent;}
 
+	//Damage function so player can receive damage 
+	UFUNCTION()
+		void TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunStuff")
@@ -185,6 +190,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CollisionTests")
 		FCollisionParams SphereCollisionParams;
+
+	//HP of character
+	int m_HP = 400;
 
 	bool bHasGun = false; 
 

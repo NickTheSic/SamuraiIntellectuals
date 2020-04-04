@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UObject/ConstructorHelpers.h"
 #include "SI_JustSurviveProjectile.generated.h"
 
 UCLASS(config=Game)
@@ -22,6 +23,8 @@ class ASI_JustSurviveProjectile : public AActor
 public:
 	ASI_JustSurviveProjectile();
 
+	FString GetDamageType() { return m_DamageType; }
+
 	/** called when projectile hits something */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -32,7 +35,11 @@ public:
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "Damage Type")
+		FString m_DamageType;
+
 	UPROPERTY (EditAnywhere, Category = "Damage")
 		float m_DamageAmount = 50.0f;
+
 };
 
