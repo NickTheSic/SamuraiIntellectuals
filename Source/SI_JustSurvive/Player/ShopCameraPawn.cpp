@@ -39,7 +39,7 @@ void AShopCameraPawn::SetPlaceableObject(ATowerBase * newTower)
 void AShopCameraPawn::OnClickPlaceObject()
 {
 	//if (m_PlaceableTower != nullptr && bCanPlaceTower)
-	if (CheckCanPlaceUnderMouse())
+	if (CheckCanPlaceUnderMouse() && m_PlaceableTower != nullptr)
 	{
 
 		UWorld* world = GetWorld();
