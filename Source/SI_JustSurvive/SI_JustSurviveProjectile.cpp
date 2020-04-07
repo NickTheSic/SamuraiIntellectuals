@@ -7,6 +7,10 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "GameFramework/DamageType.h"
 #include "Engine/Engine.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 
 
 ASI_JustSurviveProjectile::ASI_JustSurviveProjectile() 
@@ -32,6 +36,13 @@ ASI_JustSurviveProjectile::ASI_JustSurviveProjectile()
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
+
+	//Particle Effects
+	//static ConstructorHelpers::FObjectFinder<UParticleSystem> PS(TEXT("/Game/FirstPerson/Particles/P_Explosion"));
+	//if (PS.Succeeded())
+	//{
+	//	ProjectileFX = PS.Object;
+	//}
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
@@ -73,7 +84,9 @@ void ASI_JustSurviveProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 
 		OtherActor->TakeDamage(m_DamageAmount, DamageEvent, MyInstigatorsController, this);
 		
-		Destroy();		
+		Destroy();
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_ParticleEffect, GetActorLocation());
+		
 	}
 }
 

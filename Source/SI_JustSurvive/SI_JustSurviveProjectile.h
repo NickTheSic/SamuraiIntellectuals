@@ -20,6 +20,7 @@ class ASI_JustSurviveProjectile : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+
 public:
 	ASI_JustSurviveProjectile();
 
@@ -40,6 +41,9 @@ protected:
 
 	UPROPERTY (EditAnywhere, Category = "Damage")
 		float m_DamageAmount = 50.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Particle Effects")
+		UParticleSystem* m_ParticleEffect;
 
 };
 
