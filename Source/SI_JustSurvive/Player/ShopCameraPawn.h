@@ -33,6 +33,10 @@ public:
 
 	void OnClickPlaceObject();
 
+	//TODO: Nick - See if I can rearrange this function
+	//UFUNCTION(Server, Reliable)
+		void ServerPlaceObject(TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower);
+
 	void MoveUp(float val);
 	void MoveRight(float val);
 
@@ -40,8 +44,11 @@ public:
 
 	//TODO: Add a function that changes the mouse cursor colour if we can't place it
 	bool  CheckCanPlaceUnderMouse();
-
+	
+	UFUNCTION(Server, Reliable, WithValidation)
 	void EnteringShop();
+
+	UFUNCTION(Server, Reliable, WithValidation)
 	void ExitingShop();
 
 	bool GetIsActiveInShop();
@@ -53,12 +60,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		class UCameraComponent* m_CameraComponent; //The camera
 
+	UPROPERTY(Replicated)
 	class ATowerBase* m_PlaceableTower; //The current active object
 
+	UPROPERTY(Replicated)
 	bool bIsActiveInShop = false;
+
 	bool bCanPlaceTower = false;
 
-	UPROPERTY(EditAnywhere, Category = "Config")
+	UPROPERTY(Replicated, EditAnywhere, Category = "Config")
 		float m_TrenchDepth = 0; //The depth of the trench.  We can cast to the top of the trench where towers can be placed but not in the trench
 
 	//TODO: I want to add a texture that follows the mouse so that it can be changed.  Showing the player it can and cant be placed

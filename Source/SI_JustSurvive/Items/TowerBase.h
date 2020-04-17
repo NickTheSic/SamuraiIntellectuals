@@ -18,7 +18,7 @@ USTRUCT()
 struct FTowerData
 {
 	GENERATED_USTRUCT_BODY()
-
+		
 		UPROPERTY()
 		int m_Damage;
 

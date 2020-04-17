@@ -32,37 +32,48 @@ AEnemyBase::AEnemyBase()
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true); 
 	//GetCapsuleComponent()->SetSimulatePhysics(true); 
 	//GetCapsuleComponent()->SetEnableGravity(false); 
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemyBase::OnHit);
 
 	GetMesh()->SetCollisionProfileName("NoCollision"); 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemyBase::OnHit); 
 	//TODO(Anyone): Networking - Wait it is a Character, are they networked?
 	//SetReplicates(true)
 	//SetReplicatesMovement(true);
 
-	Tags.Add("Enemy"); 
 
 	//TODO: Have enemies take damage
 	SetCanBeDamaged(true);
-	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
+
 
 	//TODO: @Vanessa Add a noise emitter to enemy and make it so the tower is instigated by by the enemy's noise emitter. Sense the player and generator with Pawn Sensing.  
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
+
 	//SetMakeNoiseDelegate();
 	//TODO: @Anthony Make the enemy spawn a proectile based on forward vector.  
 
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>("Pawn Sensor");
+	OnTakeAnyDamage.AddDynamic(this, &AEnemyBase::TakeAnyDamage);
+
 	PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBase::OnPawnSeen);
+
+	//Networking
+	SetReplicates(true);
+	SetReplicateMovement(true);
+
+	Tags.Add("Enemy"); 
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
 {
-	check(wayMan && "Waypoint Manager was null");
-
-	if (wayMan)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		m_WaypointManager = wayMan;
+		check(wayMan && "Waypoint Manager was null");
+
+		if (wayMan)
+		{
+			m_WaypointManager = wayMan;
+		}
 	}
 }
 
@@ -74,27 +85,39 @@ void AEnemyBase::BeginPlay()
 	//MakeNoise(1.0f, this, GetActorLocation());
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
 
-	TArray<AActor*> roundManagers; 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoundManager::StaticClass(), roundManagers);
-
-	m_RoundManager = Cast<ARoundManager>(roundManagers[0]); 
-
-	//TODO: check that there is no more than one Round Manager. 
-
-	if (m_WaypointManager == nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		FindWaypointManager();
+		//Couldn't add delegates here
 	}
 
-	if (EnemyData.m_EnemyMesh != nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
+
+		TArray<AActor*> roundManagers;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoundManager::StaticClass(), roundManagers);
+
+		m_RoundManager = Cast<ARoundManager>(roundManagers[0]);
+
+		//TODO: check that there is no more than one Round Manager. 
+
+		if (m_WaypointManager == nullptr)
+		{
+			FindWaypointManager();
+		}
+
+		if (EnemyData.m_EnemyMesh != nullptr)
+		{
+			GetMesh()->SetSkeletalMesh(EnemyData.m_EnemyMesh);
+		}
+
 	}
 }
 
 void AEnemyBase::FindWaypointManager()
 {
 	//We only want to do this if the waypoint manager is null
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	if (m_WaypointManager == nullptr)
 	{
 		TArray<AActor*> singleWaypointManager;
@@ -116,62 +139,66 @@ void AEnemyBase::FindWaypointManager()
 
 void AEnemyBase::GetNewWaypoint()
 {
-
-	//TODO: Networking - GetLocalRole() == ROLE_Authority ??
-	check(m_WaypointManager && "Waypoint manager was null");
-
-	//check(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()));
-
-	if (m_TargetWaypoint != nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		//Set the old waypoint to Not Taken
-		m_TargetWaypoint->SetIsWaypointTaken(false);
-	}
+		//TODO: Networking - GetLocalRole() == ROLE_Authority ??
+		check(m_WaypointManager && "Waypoint manager was null");
 
-	//TODO(Anyone): This will work for looping through.  But when we get to the generator it will need to be refactored
-	if (m_WaypointManager)
-	{
-		check(m_WaypointManager->GetWaypointGroupSize() != 0);
-
-		if (m_TargetWaypoint == nullptr || m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
-		{
-			m_CurrentWaypointGroup = 0;
-			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
-		}
-		else
-		{
-			m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
-		}
+		//check(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()));
 
 		if (m_TargetWaypoint != nullptr)
 		{
-			m_TargetWaypoint->SetIsWaypointTaken(true);
-			IncrementCurrentWaypointGroup();
-			UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
+			//Set the old waypoint to Not Taken
+			m_TargetWaypoint->SetIsWaypointTaken(false);
+		}
+
+		//TODO(Anyone): This will work for looping through.  But when we get to the generator it will need to be refactored
+		if (m_WaypointManager)
+		{
+			check(m_WaypointManager->GetWaypointGroupSize() != 0);
+
+			if (m_TargetWaypoint == nullptr || m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
+			{
+				m_CurrentWaypointGroup = 0;
+				m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
+			}
+			else
+			{
+				m_TargetWaypoint = m_WaypointManager->GetRandomWaypoint(m_CurrentWaypointGroup);
+			}
+
+			if (m_TargetWaypoint != nullptr)
+			{
+				m_TargetWaypoint->SetIsWaypointTaken(true);
+				IncrementCurrentWaypointGroup();
+				UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), m_TargetWaypoint);
+			}
+		}
+
+		if (m_TargetWaypoint == nullptr)
+		{
+			//If we didn't find a point in the next group we fall back
+			DecrementCurrentWaypointGroup();
 		}
 	}
-
-	if (m_TargetWaypoint == nullptr)
-	{
-		//If we didn't find a point in the next group we fall back
-		DecrementCurrentWaypointGroup();
-	}
-
 }
 
 // Called every frame
 void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (GetLocalRole() != ROLE_Authority) return;
 
 	//test
 	MakeNoise(6.0f, this, GetActorLocation());
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 32.0f, 12, FColor::Green, false, 10.0f);
 
-
-	if (m_WaypointManager == nullptr)
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		FindWaypointManager();
+		if (m_WaypointManager == nullptr)
+		{
+			FindWaypointManager();
+		}
 	}
 
 	if (m_TargetWaypoint != nullptr)
@@ -184,7 +211,10 @@ void AEnemyBase::Tick(float DeltaTime)
 		if (DistanceSize < EnemyData.m_DistanceToPoint)
 		{
 			//TODO: Make this change states instead of getting a new Waypoint
-			GetNewWaypoint();
+			if (bIsSensing == false)
+			{
+				GetNewWaypoint();
+			}
 		}
 	}
 	else
@@ -202,6 +232,18 @@ void AEnemyBase::Tick(float DeltaTime)
         }
     }
 
+	if (bIsSensing)
+	{
+		m_PawnSensingTimer += DeltaTime; 
+
+		if (m_PawnSensingTimer > 15.0f)
+		{
+			bIsSensing = false;
+
+			m_PawnSensingTimer = 0.0f; 
+		}
+	}
+
 }
 
 void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -211,21 +253,23 @@ void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 
 void AEnemyBase::OnPawnSeen(APawn* pawn)
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	//Do we want the enemy to make sure we get the player over generator or vice versa
 	if (Cast<ASI_JustSurviveCharacter>(pawn) || Cast<AGeneratorBase>(pawn))
 	{
+		bIsSensing = true; 
+
         TargetPawn = pawn;
 		//TODO: Later
         //m_TargetWaypoint->SetIsWaypointTaken(false); 
-        //m_TargetWaypoint = nullptr; 
+        //m_TargetWaypoint = nullptr;
 
         bCanShoot = true; 
         FVector Direction = pawn->GetActorLocation() - GetActorLocation();
         Direction.Normalize();
 
         FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
-        NewLookAt.Pitch = 0.0f;
-        NewLookAt.Roll = 0.0f;
+        
         SetActorRotation(NewLookAt);
 
         if (bCanShoot)
@@ -244,11 +288,90 @@ void AEnemyBase::OnPawnSeen(APawn* pawn)
 
 void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	float m_DamageAmount = 0;
-	m_DamageAmount = Damage;
+	if (GetLocalRole() != ROLE_Authority) return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
-	m_EnemyHP -= m_DamageAmount;
+	ASI_JustSurviveProjectile* projectile = Cast<ASI_JustSurviveProjectile>(DamageCauser);
+
+		//Check damage type of ammo (lightning, fire, etc.)
+			//Check enemy type being attacked
+			//Enemy types; Shielded, Unarmored, Ablative
+			//Damage types; Lightning, Fire, Poison
+			//Lightning > Fire > Poison > Lightning 
+		if (projectile && DamageCauser->GetOwner()->ActorHasTag("Enemy") == false)
+	{
+			float m_DamageAmount = 0;
+			m_DamageAmount = Damage;
+
+			//DAMAGE TYPE 1 - LIGHTNING
+		if (projectile->GetDamageType() == "Lightning")
+		{
+			
+			if (m_EnemyType == "Fire")
+			{
+				m_DamageAmount *= 2;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "STRONG Attack - " + FString::FromInt(m_DamageAmount) + " LIGHTNING damage dealt");
+			}
+			if(m_EnemyType == "Poison")
+			{
+				m_DamageAmount *= 0.5;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "WEAK Attack- " + FString::FromInt(m_DamageAmount) + " LIGHTNING damage dealt");
+			}
+			else
+			{
+				m_DamageAmount *= 1;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Normal Attack - " + FString::FromInt(m_DamageAmount) + " LIGHTNING damage dealt");
+			}
+		}
+
+		//FIRE DAMAGE AMMO
+		if (projectile->GetDamageType() == "Fire")
+		{
+			if (m_EnemyType == "Poison")
+			{
+				m_DamageAmount *= 2;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "STRONG Attack - " + FString::FromInt(m_DamageAmount) + " FIRE damage dealt");
+			}
+			if (m_EnemyType == "Lightning")
+			{
+				m_DamageAmount *= 0.5;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "WEAK Attack- " + FString::FromInt(m_DamageAmount) + " FIRE damage dealt");
+			}
+			else
+			{
+				m_DamageAmount *= 1;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Normal Attack - " + FString::FromInt(m_DamageAmount) + " FIRE damage dealt");
+			}
+		}
+
+		//POISON DAMAGE AMMO TYPE
+		if (projectile->GetDamageType() == "Poison")
+		{
+			if (m_EnemyType == "Lightning")
+			{
+				m_DamageAmount *= 2;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "STRONG Attack - " + FString::FromInt(m_DamageAmount) + " POISON damage dealt");
+			}
+			if (m_EnemyType == "Fire")
+			{
+				m_DamageAmount *= 0.5;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "WEAK Attack- " + FString::FromInt(m_DamageAmount) + " POISON damage dealt");
+			}
+			else
+			{
+				m_DamageAmount *= 1;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Normal Attack - " + FString::FromInt(m_DamageAmount) + " POISON damage dealt");
+			}
+		}		
+	}
 
 	if (m_EnemyHP <= 0)
 	{
@@ -258,6 +381,8 @@ void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamage
 
 void AEnemyBase::KillEnemy()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	if (m_TargetWaypoint != nullptr)
 	{
 		//When the enemy dies we want him to give up his waypoint
@@ -271,12 +396,16 @@ void AEnemyBase::KillEnemy()
 
 void AEnemyBase::Shoot()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
     FTimerManager& Timer = GetWorldTimerManager(); 
     Timer.SetTimer(m_EnemyFireTimer, this, &AEnemyBase::SpawnProjectile, m_EnemyFireRate, false, 0.2);
 }
 
 void AEnemyBase::SpawnProjectile()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
     if (ProjectileClass != nullptr)
     {
         UWorld* const World = GetWorld(); 
@@ -306,6 +435,8 @@ void AEnemyBase::ClearShootTimer()
 
 void AEnemyBase::IncrementCurrentWaypointGroup()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	m_CurrentWaypointGroup++;
 
 	if (m_CurrentWaypointGroup >= m_WaypointManager->GetWaypointGroupSize())
@@ -317,6 +448,8 @@ void AEnemyBase::IncrementCurrentWaypointGroup()
 
 void AEnemyBase::DecrementCurrentWaypointGroup()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
+
 	m_CurrentWaypointGroup--;
 
 	if (m_CurrentWaypointGroup < 0)

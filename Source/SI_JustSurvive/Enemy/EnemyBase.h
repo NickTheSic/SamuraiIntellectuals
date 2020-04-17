@@ -75,10 +75,14 @@ protected:
 		FEnemyData EnemyData;
 	
 	UPROPERTY(EditAnywhere, Category = "Health")
-		float m_EnemyHP = 150.0f;
+		float m_EnemyHP = 100.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy Config")
 		class ARoundManager* m_RoundManager; 
+
+	//Changing damage types by different weapons
+	UPROPERTY(EditAnywhere, Category = "Enemy Type")
+		FString m_EnemyType;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* pawn);
@@ -108,7 +112,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Enemy Config")
         TSubclassOf<class ASI_JustSurviveProjectile> ProjectileClass;
 
-    bool bCanShoot = false; 
+    bool bCanShoot = false;
+	bool bIsSensing = false;
+
+	float m_PawnSensingTimer = 0.0f; 
 
 public:	
 	// Called every frame

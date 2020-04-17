@@ -39,11 +39,15 @@ void AGeneratorBase::BeginPlay()
 
 void AGeneratorBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,	class AController* InstigatedBy, AActor* DamageCauser)
 {
-	float m_DamageAmount = 0;
-	m_DamageAmount = Damage;
+	//Only Enemy can attack generator
+	if (DamageCauser->GetOwner()->ActorHasTag("Enemy"))
+	{
+		float m_DamageAmount = 0;
+		m_DamageAmount = Damage;
 
-	m_HP -= m_DamageAmount;
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Generator under attack! " + FString::FromInt(Damage) + " damage taken, " + FString::FromInt(m_HP) + "HP left");
+		m_HP -= m_DamageAmount;
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Generator under attack! " + FString::FromInt(Damage) + " damage taken, " + FString::FromInt(m_HP) + "HP left");
+	}
 
 	//TODO:: Implement "Game Over Screen" if hp reaches zero
 	if (m_HP <= 0)
@@ -52,7 +56,6 @@ void AGeneratorBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const cla
 		ASI_PlayerController* pController = Cast <ASI_PlayerController>(GetWorld()->GetFirstPlayerController());
 		pController->InitiateGameOver();
 	}
-
 }
 
 // Called every frame
