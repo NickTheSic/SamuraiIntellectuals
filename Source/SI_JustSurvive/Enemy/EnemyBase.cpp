@@ -41,7 +41,6 @@ AEnemyBase::AEnemyBase()
 	//SetReplicates(true)
 	//SetReplicatesMovement(true);
 
-	Tags.Add("Enemy"); 
 
 	//TODO: Have enemies take damage
 	SetCanBeDamaged(true);
@@ -58,8 +57,11 @@ AEnemyBase::AEnemyBase()
 
 	PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBase::OnPawnSeen);
 
+	//Networking
 	SetReplicates(true);
 	SetReplicateMovement(true);
+
+	Tags.Add("Enemy"); 
 }
 
 void AEnemyBase::SetWaypointManager(AWaypointManager* wayMan)
@@ -272,11 +274,88 @@ void AEnemyBase::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamage
 {
 	if (GetLocalRole() != ROLE_Authority) return;
 
-	float m_DamageAmount = 0;
-	m_DamageAmount = Damage;
+	ASI_JustSurviveProjectile* projectile = Cast<ASI_JustSurviveProjectile>(DamageCauser);
 
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Damage Received - " + FString::FromInt(Damage));
-	m_EnemyHP -= m_DamageAmount;
+		//Check damage type of ammo (lightning, fire, etc.)
+			//Check enemy type being attacked
+			//Enemy types; Shielded, Unarmored, Ablative
+			//Damage types; Lightning, Fire, Poison
+			//Lightning > Fire > Poison > Lightning 
+		if (projectile && DamageCauser->GetOwner()->ActorHasTag("Enemy") == false)
+	{
+			float m_DamageAmount = 0;
+			m_DamageAmount = Damage;
+
+			//DAMAGE TYPE 1 - LIGHTNING
+		if (projectile->GetDamageType() == "Lightning")
+		{
+			
+			if (m_EnemyType == "Fire")
+			{
+				m_DamageAmount *= 2;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "STRONG Attack - " + FString::FromInt(m_DamageAmount) + " LIGHTNING damage dealt");
+			}
+			if(m_EnemyType == "Poison")
+			{
+				m_DamageAmount *= 0.5;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "WEAK Attack- " + FString::FromInt(m_DamageAmount) + " LIGHTNING damage dealt");
+			}
+			else
+			{
+				m_DamageAmount *= 1;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Normal Attack - " + FString::FromInt(m_DamageAmount) + " LIGHTNING damage dealt");
+			}
+		}
+
+		//FIRE DAMAGE AMMO
+		if (projectile->GetDamageType() == "Fire")
+		{
+			if (m_EnemyType == "Poison")
+			{
+				m_DamageAmount *= 2;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "STRONG Attack - " + FString::FromInt(m_DamageAmount) + " FIRE damage dealt");
+			}
+			if (m_EnemyType == "Lightning")
+			{
+				m_DamageAmount *= 0.5;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "WEAK Attack- " + FString::FromInt(m_DamageAmount) + " FIRE damage dealt");
+			}
+			else
+			{
+				m_DamageAmount *= 1;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Normal Attack - " + FString::FromInt(m_DamageAmount) + " FIRE damage dealt");
+			}
+		}
+
+		//POISON DAMAGE AMMO TYPE
+		if (projectile->GetDamageType() == "Poison")
+		{
+			if (m_EnemyType == "Lightning")
+			{
+				m_DamageAmount *= 2;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "STRONG Attack - " + FString::FromInt(m_DamageAmount) + " POISON damage dealt");
+			}
+			if (m_EnemyType == "Fire")
+			{
+				m_DamageAmount *= 0.5;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "WEAK Attack- " + FString::FromInt(m_DamageAmount) + " POISON damage dealt");
+			}
+			else
+			{
+				m_DamageAmount *= 1;
+				m_EnemyHP -= m_DamageAmount;
+				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Normal Attack - " + FString::FromInt(m_DamageAmount) + " POISON damage dealt");
+			}
+		}		
+	}
 
 	if (m_EnemyHP <= 0)
 	{

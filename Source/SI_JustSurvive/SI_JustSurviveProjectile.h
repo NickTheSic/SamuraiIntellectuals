@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UObject/ConstructorHelpers.h"
 #include "SI_JustSurviveProjectile.generated.h"
 
 UCLASS(config=Game)
@@ -19,8 +20,11 @@ class ASI_JustSurviveProjectile : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+
 public:
 	ASI_JustSurviveProjectile();
+
+	FString GetDamageType() { return m_DamageType; }
 
 	/** called when projectile hits something */
 	UFUNCTION()
@@ -32,7 +36,14 @@ public:
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "Damage Type")
+		FString m_DamageType;
+
 	UPROPERTY (EditAnywhere, Category = "Damage")
 		float m_DamageAmount = 50.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Particle Effects")
+		UParticleSystem* m_ParticleEffect;
+
 };
 
