@@ -108,7 +108,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Enemy Config")
         TSubclassOf<class ASI_JustSurviveProjectile> ProjectileClass;
 
-    bool bCanShoot = false; 
+    bool bCanShoot = false;
+	bool bIsSensing = false;
+
+	float m_PawnSensingTimer = 0.0f; 
 
 public:	
 	// Called every frame

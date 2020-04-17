@@ -58,6 +58,11 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 	//Noise Emitter for Tower's PawnSensingComponent
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
 	m_InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory"); 
+
+	Mesh1P->SetIsReplicated(true); 
+
+	SetReplicates(true);
+	SetReplicateMovement(true); 
 }
 
 void ASI_JustSurviveCharacter::Tick(float DeltaTime)

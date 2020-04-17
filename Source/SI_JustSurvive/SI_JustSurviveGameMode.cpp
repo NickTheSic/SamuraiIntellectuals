@@ -4,6 +4,8 @@
 #include "SI_JustSurviveHUD.h"
 #include "SI_JustSurviveCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "EngineUtils.h"
+#include "Engine/StaticMeshActor.h"
 
 ASI_JustSurviveGameMode::ASI_JustSurviveGameMode()
 	: Super()
@@ -15,3 +17,5 @@ ASI_JustSurviveGameMode::ASI_JustSurviveGameMode()
 	// use our custom HUD class
 	HUDClass = ASI_JustSurviveHUD::StaticClass();
 }
+
+

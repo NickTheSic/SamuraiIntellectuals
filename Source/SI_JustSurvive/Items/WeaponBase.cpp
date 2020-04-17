@@ -21,6 +21,11 @@ AWeaponBase::AWeaponBase()
 	m_StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh")); 
 	m_StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 	m_StaticMesh->SetupAttachment(RootComponent); 
+
+	m_StaticMesh->SetIsReplicated(true); 
+
+	SetReplicates(true); 
+	SetReplicateMovement(true); 
 }
 
 void AWeaponBase::BeginPlay()
@@ -124,6 +129,11 @@ void AWeaponBase::Reload()
 		m_GunData.m_AmmoInClip = m_GunData.m_TotalAmmo;
 		m_GunData.m_TotalAmmo = 0;
 	}
+}
+
+void AWeaponBase::AddAmmo(int32 amount)
+{
+	m_GunData.m_TotalAmmo += amount; 
 }
 
 bool AWeaponBase::Purchase(ASI_PlayerController* character)
