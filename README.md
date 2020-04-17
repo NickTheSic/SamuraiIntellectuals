@@ -1,5 +1,8 @@
 # SamuraiIntellectuals
 
+NOTE - The Host doesn't load properly in the built excecutable, the client works fine in the executable
+        This issue isn't while in the editor
+
 Samurai Intellectuals:
 	Nick Lemmon - Programmer
 	Anthony D'Alessandro - Programmer
