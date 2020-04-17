@@ -63,6 +63,13 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 
 	SetReplicates(true);
 	SetReplicateMovement(true); 
+
+	//Added for player damage
+	SetCanBeDamaged(true);
+	OnTakeAnyDamage.AddDynamic(this, &ASI_JustSurviveCharacter::TakeAnyDamage);
+	
+	Tags.Add("Player");
+
 }
 
 void ASI_JustSurviveCharacter::Tick(float DeltaTime)
@@ -144,6 +151,27 @@ void ASI_JustSurviveCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAxis("TurnRate", this, &ASI_JustSurviveCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ASI_JustSurviveCharacter::LookUpAtRate);
+}
+
+void ASI_JustSurviveCharacter::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	if(DamageCauser->GetOwner()->ActorHasTag("Enemy"))	
+	{
+		float m_DamageAmount = 0;
+		m_DamageAmount = Damage;
+
+		m_HP -= m_DamageAmount;
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, "Player took " + FString::FromInt(Damage) + " damage, " + FString::FromInt(m_HP) + " health left");
+	}
+
+	//TODO:: Implement "Game Over Screen" if hp reaches zero
+	if (m_HP <= 0)
+	{
+		Destroy();
+		ASI_PlayerController* pController = Cast <ASI_PlayerController>(GetWorld()->GetFirstPlayerController());
+		pController->InitiateGameOver();
+	}
+
 }
 
 void ASI_JustSurviveCharacter::OnFire()

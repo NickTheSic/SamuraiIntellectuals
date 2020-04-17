@@ -26,8 +26,11 @@ ATowerBase::ATowerBase()
 
 	m_TowerData.m_FireRate = 1.5f;
 	
+	//Networking
 	SetReplicates(true);
 	SetReplicateMovement(true);
+
+	Tags.Add("Tower");
 }
 
 void ATowerBase::BeginPlay()
@@ -45,7 +48,6 @@ void ATowerBase::BeginPlay()
 		//m_PawnSensingComp->OnHearNoise.Clear();
 		//m_PawnSensingComp->OnHearNoise.AddDynamic(this, &ATowerBase::OnNoiseHeard);
 	}
-
 }
 
 void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, float Volume)
@@ -57,22 +59,20 @@ void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location,
 		{
 			return;
 		}
+		
+		
+		
+			FVector Direction = Location - GetActorLocation();
+			Direction.Normalize();
 
-		//FString message = TEXT("Saw Actor") + NoiseInstigator->GetName();
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
+			FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+			NewLookAt.Pitch = 0.0f;
+			NewLookAt.Roll = 0.0f;
+			SetActorRotation(NewLookAt);
 
-		//DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Green, false, 10.0f);
-
-		FVector Direction = Location - GetActorLocation();
-		Direction.Normalize();
-
-		FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
-		NewLookAt.Pitch = 0.0f;
-		NewLookAt.Roll = 0.0f;
-		SetActorRotation(NewLookAt);
-
-		ShootProjectile();
-		bCanShoot = false;
+			ShootProjectile();
+			bCanShoot = false;
+		
 	}
 }
 
