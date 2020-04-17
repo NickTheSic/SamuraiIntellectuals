@@ -211,7 +211,10 @@ void AEnemyBase::Tick(float DeltaTime)
 		if (DistanceSize < EnemyData.m_DistanceToPoint)
 		{
 			//TODO: Make this change states instead of getting a new Waypoint
-			GetNewWaypoint();
+			if (bIsSensing == false)
+			{
+				GetNewWaypoint();
+			}
 		}
 	}
 	else
@@ -229,6 +232,18 @@ void AEnemyBase::Tick(float DeltaTime)
         }
     }
 
+	if (bIsSensing)
+	{
+		m_PawnSensingTimer += DeltaTime; 
+
+		if (m_PawnSensingTimer > 15.0f)
+		{
+			bIsSensing = false;
+
+			m_PawnSensingTimer = 0.0f; 
+		}
+	}
+
 }
 
 void AEnemyBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -242,18 +257,19 @@ void AEnemyBase::OnPawnSeen(APawn* pawn)
 	//Do we want the enemy to make sure we get the player over generator or vice versa
 	if (Cast<ASI_JustSurviveCharacter>(pawn) || Cast<AGeneratorBase>(pawn))
 	{
+		bIsSensing = true; 
+
         TargetPawn = pawn;
 		//TODO: Later
         //m_TargetWaypoint->SetIsWaypointTaken(false); 
-        //m_TargetWaypoint = nullptr; 
+        //m_TargetWaypoint = nullptr;
 
         bCanShoot = true; 
         FVector Direction = pawn->GetActorLocation() - GetActorLocation();
         Direction.Normalize();
 
         FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
-        NewLookAt.Pitch = 0.0f;
-        NewLookAt.Roll = 0.0f;
+        
         SetActorRotation(NewLookAt);
 
         if (bCanShoot)

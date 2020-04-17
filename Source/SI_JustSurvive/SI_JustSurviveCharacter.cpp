@@ -59,11 +59,17 @@ ASI_JustSurviveCharacter::ASI_JustSurviveCharacter()
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise Emitter"));
 	m_InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory"); 
 
+	Mesh1P->SetIsReplicated(true); 
+
+	SetReplicates(true);
+	SetReplicateMovement(true); 
+
 	//Added for player damage
 	SetCanBeDamaged(true);
 	OnTakeAnyDamage.AddDynamic(this, &ASI_JustSurviveCharacter::TakeAnyDamage);
 	
 	Tags.Add("Player");
+
 }
 
 void ASI_JustSurviveCharacter::Tick(float DeltaTime)
