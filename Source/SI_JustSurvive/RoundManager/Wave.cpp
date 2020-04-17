@@ -28,6 +28,9 @@ void AWave::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
     if (bBeganSpawningEnemies)
     {
         if (m_EnemyGroups[m_EnemyGroupIndex]->GetDefaultObject<AEnemyGroup>()->WereAllEnemiesSpawned() == true)
@@ -52,6 +55,8 @@ int AWave::GetNumEnemies()
 
 void AWave::SpawnAllEnemyGroups()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
     /*m_World->GetTimerManager().ClearTimer(m_EnemyGroupTimer);
 
 	m_EnemyGroupTimerRate = m_EnemyGroups[m_EnemyGroupIndex]->GetDefaultObject<AEnemyGroup>()->GetAllEnemiesDeployedTimer();
@@ -70,6 +75,9 @@ void AWave::SpawnAllEnemyGroups()
 
 void AWave::SpawnNextEnemyGroup()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
 	if (m_EnemyGroupIndex < m_EnemyGroups.Num())
 	{
         bBeganSpawningEnemies = true; 

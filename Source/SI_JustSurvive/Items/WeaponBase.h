@@ -12,6 +12,14 @@
 			2/10/2020: Nick - I changed purchase to take a player controller
 */
 
+UENUM()
+enum ElementType
+{
+	Element0 UMETA(DisplayName = "ElementZero"), 
+	Element1 UMETA(DisplayName = "ElementOne"), 
+	Element2 UMETA(DisplayName = "ElementTwo")
+};
+
 USTRUCT(BlueprintType)
 struct FGunData
 {
@@ -34,6 +42,9 @@ struct FGunData
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GunData")
 		UTexture* m_UITexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GunData")
+		TEnumAsByte<ElementType> m_Element; 
 };
 
 UCLASS()
@@ -88,6 +99,8 @@ public:
 	void PullTrigger(); 
 	void ReleaseTrigger(); 
 	void Reload(); 
+
+	void AddAmmo(int32 amount); 
 
 	bool Purchase(class ASI_PlayerController* character) override;
 

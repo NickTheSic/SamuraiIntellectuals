@@ -17,7 +17,7 @@ class SI_JUSTSURVIVE_API ASI_PlayerController : public APlayerController
 protected:
 	
 	//A Reference to the initial pawn we possess so that we can repossess it
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	class ASI_JustSurviveCharacter* MyOwningCharacter = nullptr; 
 
 	//The tower menu for the player
@@ -35,7 +35,7 @@ protected:
 
 
 public:
-
+	ASI_PlayerController();
 
 	//The base functions that we need
 	void OnPossess(class APawn* aPawn) override;
@@ -43,11 +43,25 @@ public:
 
 	void SetupInputComponent() override;
 
+	UFUNCTION(Server, Reliable)
+		void ServerPlaceTower(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower);
+
+	UFUNCTION()
+		void PlaceTower(AShopCameraPawn* camPawn, TSubclassOf<ATowerBase> tower, FTransform transform, ATowerBase* placeableTower)
+	{
+		ServerPlaceTower(camPawn, tower, transform, placeableTower);
+	}
 
 	//I'll make this public for now
+	UFUNCTION(Server, Reliable)
+		void ServerCallEnterShop(AShopCameraPawn* camPawn);
+
 	void EnterTowerShopMenu(); //Called on button press
 
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	UFUNCTION(Server, Reliable)
+		void ServerExitShop(AShopCameraPawn* camPawn);
+
+	UFUNCTION( BlueprintCallable, Category = "Gameplay")
 		void ExitTowerShopMenu();
 
 	class UTowerShopMenu* GetTowerShopMenu() { return MyTowerHud; };

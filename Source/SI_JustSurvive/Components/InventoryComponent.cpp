@@ -35,6 +35,8 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UInventoryComponent::NextWeapon()
 {
+	if (GetWeaponCount() > 0)
+	{
 	for (int i = 0; i < GetWeaponCount(); i++)
 	{
 		if (m_CurrentWeapon == m_WeaponArray[i])
@@ -56,27 +58,31 @@ void UInventoryComponent::NextWeapon()
 			}
 		}
 	}
+	}
 }
 
 void UInventoryComponent::PreviousWeapon()
 {
-	for (int i = 0; i < GetWeaponCount(); i++)
+	if (GetWeaponCount() > 0)
 	{
-		if (m_CurrentWeapon == m_WeaponArray[i])
+		for (int i = 0; i < GetWeaponCount(); i++)
 		{
-			if (i > 0)
+			if (m_CurrentWeapon == m_WeaponArray[i])
 			{
-				m_CurrentWeapon->Unequip();
-				m_CurrentWeapon = m_WeaponArray[i - 1];
-				m_CurrentWeapon->Equip();
-				break;
-			}
-			else
-			{
-				m_CurrentWeapon->Unequip();
-				m_CurrentWeapon = m_WeaponArray[GetWeaponCount() - 1];
-				m_CurrentWeapon->Equip();
-				break;
+				if (i > 0)
+				{
+					m_CurrentWeapon->Unequip();
+					m_CurrentWeapon = m_WeaponArray[i - 1];
+					m_CurrentWeapon->Equip();
+					break;
+				}
+				else
+				{
+					m_CurrentWeapon->Unequip();
+					m_CurrentWeapon = m_WeaponArray[GetWeaponCount() - 1];
+					m_CurrentWeapon->Equip();
+					break;
+				}
 			}
 		}
 	}

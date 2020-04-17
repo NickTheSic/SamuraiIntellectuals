@@ -26,6 +26,11 @@ ATowerBase::ATowerBase()
 
 	m_TowerData.m_FireRate = 1.5f;
 	
+	//Networking
+	SetReplicates(true);
+	SetReplicateMovement(true);
+
+	Tags.Add("Tower");
 }
 
 void ATowerBase::BeginPlay()
@@ -37,36 +42,45 @@ void ATowerBase::BeginPlay()
     {
         m_TowerMesh->SetStaticMesh(ItemShopData.m_StaticMesh);
     }
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		//m_PawnSensingComp->OnHearNoise.Clear();
+		//m_PawnSensingComp->OnHearNoise.AddDynamic(this, &ATowerBase::OnNoiseHeard);
+	}
 }
 
 void ATowerBase::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, float Volume)
 {
 	//GetWorldTimerManager().SetTimer(SpawnProjectileTimer, this, &ATowerBase::ShootProjectile, m_TowerData.m_FireRate, true);
-
-	if (Cast<ASI_JustSurviveCharacter>(NoiseInstigator))
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		return;
+		if (Cast<ASI_JustSurviveCharacter>(NoiseInstigator))
+		{
+			return;
+		}
+		
+		
+		
+			FVector Direction = Location - GetActorLocation();
+			Direction.Normalize();
+
+			FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+			NewLookAt.Pitch = 0.0f;
+			NewLookAt.Roll = 0.0f;
+			SetActorRotation(NewLookAt);
+
+			ShootProjectile();
+			bCanShoot = false;
+		
 	}
-
-	FString message = TEXT("Saw Actor") + NoiseInstigator->GetName();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
-
-	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Green, false, 10.0f);
-
-	FVector Direction = Location - GetActorLocation();
-	Direction.Normalize();
-
-	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
-	NewLookAt.Pitch = 0.0f;
-	NewLookAt.Roll = 0.0f;
-	SetActorRotation(NewLookAt);
-	
-	ShootProjectile();
-	bCanShoot = false;
 }
 
 void ATowerBase::ShootProjectile()
 {
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
 	if (m_ProjectileTemplate)
 	{
 		bCanShoot = true;
