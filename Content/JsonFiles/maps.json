@@ -1,7 +1,14 @@
 {
   "GameMaps": {
-    "maps": [  
-      { "name":"Map1", "info":[ "/Game/Maps/Trench-Persistent", "2", "Description" ] },
-       ] 
+    "maps": [
+      {
+        "name": "Trench",
+        "info": [ "/Game/Maps/SinglePlayerLevel/SinglePlayerMap-Persistent", "2", "Single Player level" ]
+      },
+      {
+        "name": "Alpha 2 Level",
+        "info": [ "/Game/Maps/MultiPlayerLevel/MultiplayerMap_Persistent", "2", "Multiplayer Level" ]
+      }
+    ] 
   }
 }
