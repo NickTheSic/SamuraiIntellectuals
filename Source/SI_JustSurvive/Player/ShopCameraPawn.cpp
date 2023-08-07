@@ -41,7 +41,6 @@ void AShopCameraPawn::OnClickPlaceObject()
 	//if (m_PlaceableTower != nullptr && bCanPlaceTower)
 	if (CheckCanPlaceUnderMouse() && m_PlaceableTower != nullptr)
 	{
-
 		UWorld* world = GetWorld();
 		ASI_PlayerController* pc = Cast<ASI_PlayerController>(GetController());
 
